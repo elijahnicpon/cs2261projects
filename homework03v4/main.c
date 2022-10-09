@@ -37,7 +37,7 @@ int main() {
                 break;
 
             case LOSE:
-                //doLose();
+                doLose();
                 break;
         }
     }
