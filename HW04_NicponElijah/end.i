@@ -7,7 +7,7 @@ void doEnd();
 void goEnd(int score);
 # 2 "end.c" 2
 # 1 "states.h" 1
-enum STATE {START, GAME, PAUSE, END};
+enum STATE {START, GAME, PAUSE, END, HIGHSCORE};
 # 1 "start.h" 1
 void goStart();
 void doStart();
@@ -27,6 +27,10 @@ void doPause();
 void doEnd();
 void goEnd(int score);
 # 6 "states.h" 2
+# 1 "highscore.h" 1
+void doHighScore();
+void goHighScore();
+# 7 "states.h" 2
 
 int state;
 extern int highScore;

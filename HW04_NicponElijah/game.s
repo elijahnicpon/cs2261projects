@@ -372,30 +372,35 @@ updateBalls:
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
 	@ link register save eliminated.
-	ldr	r3, .L61
+	ldr	r3, .L62
 	ldr	r1, [r3]
 	cmp	r1, #0
 	ble	.L55
 	mov	r0, #0
-	ldr	r3, .L61+4
+	mov	ip, r0
+	ldr	r3, .L62+4
 	add	r1, r1, r1, lsl #1
 	add	r1, r3, r1, lsl #3
 .L54:
 	ldr	r2, [r3, #20]
 	cmp	r2, #0
-	ldrne	r2, [r3]
-	subne	r2, r2, #1
-	strne	r2, [r3]
+	beq	.L53
+	ldr	r2, [r3]
+	sub	r2, r2, #1
+	cmp	r2, #0
+	movge	r0, #1
+	str	r2, [r3]
+	strlt	ip, [r3, #20]
+.L53:
 	add	r3, r3, #24
-	movne	r0, #1
 	cmp	r3, r1
 	bne	.L54
-	ldr	r3, .L61+8
+	ldr	r3, .L62+8
 	ldr	r3, [r3]
 	add	r3, r3, r3, lsl #4
-	ldr	r2, .L61+12
+	ldr	r2, .L62+12
 	add	r3, r3, r3, lsl #8
-	ldr	r1, .L61+16
+	ldr	r1, .L62+16
 	add	r3, r3, r3, lsl #16
 	sub	r2, r2, r3
 	cmp	r1, r2, ror #2
@@ -405,9 +410,9 @@ updateBalls:
 	bxeq	lr
 .L55:
 	b	createBall
-.L62:
+.L63:
 	.align	2
-.L61:
+.L62:
 	.word	.LANCHOR0
 	.word	balls
 	.word	time
@@ -420,10 +425,13 @@ updateBalls:
 	.ascii	"use the arrow keys to move up/down!\000"
 	.align	2
 .LC2:
-	.ascii	"score:\000"
+	.ascii	"woo! you reached\000"
 	.align	2
 .LC3:
 	.ascii	"%d\000"
+	.align	2
+.LC4:
+	.ascii	"score:\000"
 	.text
 	.align	2
 	.global	drawHUD
@@ -435,16 +443,16 @@ drawHUD:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 16
 	@ frame_needed = 0, uses_anonymous_args = 0
-	push	{r4, r5, r6, lr}
+	push	{r4, r5, r6, r7, lr}
 	mov	r4, #0
-	sub	sp, sp, #24
+	sub	sp, sp, #28
 	mov	r3, #40
 	mov	r1, r4
 	mov	r0, r4
 	mov	r2, #240
-	ldr	r6, .L68
+	ldr	r6, .L75
 	str	r4, [sp]
-	ldr	r5, .L68+4
+	ldr	r5, .L75+4
 	mov	lr, pc
 	bx	r6
 	mov	r3, #40
@@ -456,50 +464,94 @@ drawHUD:
 	bx	r6
 	ldr	r3, [r5]
 	cmp	r3, #600
-	blt	.L66
-	ldr	r4, .L68+8
-.L64:
+	blt	.L70
+	ldr	r4, .L75+8
+.L65:
+	cmp	r3, #1000
+	ble	.L74
+	ldr	r6, .L75+12
+	smull	r2, r1, r6, r3
+	asr	r2, r3, #31
+	rsb	r2, r2, r1, asr #6
+	rsb	r1, r2, r2, lsl #5
+	add	r2, r2, r1, lsl #2
+	sub	r3, r3, r2, lsl #3
+	cmp	r3, #99
+	ble	.L72
+.L74:
+	ldr	r7, .L75+16
+	add	r6, sp, #12
+.L66:
 	mov	r3, #1
 	mov	r1, #122
 	mov	r0, #2
-	ldr	r2, .L68+12
+	ldr	r2, .L75+20
 	mov	lr, pc
 	bx	r4
 	ldr	r2, [r5]
-	ldr	r1, .L68+16
-	ldr	r3, .L68+20
-	add	r0, sp, #12
+	mov	r0, r6
+	ldr	r1, .L75+24
 	mov	lr, pc
-	bx	r3
+	bx	r7
+	mov	r2, r6
 	mov	r3, #1
 	mov	r1, #122
 	mov	r0, #44
-	add	r2, sp, #12
 	mov	lr, pc
 	bx	r4
-	add	sp, sp, #24
+	add	sp, sp, #28
 	@ sp needed
-	pop	{r4, r5, r6, lr}
+	pop	{r4, r5, r6, r7, lr}
 	bx	lr
-.L66:
+.L70:
 	mov	r1, #2
 	mov	r3, #1
 	mov	r0, r1
-	ldr	r2, .L68+24
-	ldr	r4, .L68+8
+	ldr	r2, .L75+28
+	ldr	r4, .L75+8
 	mov	lr, pc
 	bx	r4
-	b	.L64
-.L69:
+	ldr	r3, [r5]
+	b	.L65
+.L72:
+	mov	r1, #2
+	mov	r3, #1
+	mov	r0, r1
+	ldr	r2, .L75+32
+	mov	lr, pc
+	bx	r4
+	ldr	r3, [r5]
+	smull	r1, r2, r6, r3
+	asr	r3, r3, #31
+	rsb	r2, r3, r2, asr #6
+	rsb	r3, r2, r2, lsl #5
+	add	r2, r2, r3, lsl #2
+	add	r6, sp, #12
+	mov	r0, r6
+	ldr	r1, .L75+24
+	ldr	r7, .L75+16
+	lsl	r2, r2, #3
+	mov	lr, pc
+	bx	r7
+	mov	r2, r6
+	mov	r3, #4
+	mov	r1, #2
+	mov	r0, #108
+	mov	lr, pc
+	bx	r4
+	b	.L66
+.L76:
 	.align	2
-.L68:
+.L75:
 	.word	drawRect4
 	.word	time
 	.word	drawString4
-	.word	.LC2
-	.word	.LC3
+	.word	274877907
 	.word	sprintf
+	.word	.LC4
+	.word	.LC3
 	.word	.LC1
+	.word	.LC2
 	.size	drawHUD, .-drawHUD
 	.align	2
 	.global	checkButtons
@@ -511,54 +563,54 @@ checkButtons:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	ldr	r2, .L82
+	ldr	r2, .L89
 	ldr	r3, [r2, #16]
 	cmp	r3, #1
 	str	lr, [sp, #-4]!
-	beq	.L80
+	beq	.L87
 	cmn	r3, #1
-	beq	.L81
-.L70:
+	beq	.L88
+.L77:
 	ldr	lr, [sp], #4
 	bx	lr
-.L81:
-	ldr	r3, .L82+4
-.L75:
+.L88:
+	ldr	r3, .L89+4
+.L82:
 	ldrh	r3, [r3]
 	tst	r3, #128
-	beq	.L70
-	ldr	r3, .L82+8
+	beq	.L77
+	ldr	r3, .L89+8
 	ldrh	r3, [r3]
 	tst	r3, #128
-	bne	.L70
+	bne	.L77
 	mov	r3, #67108864
 	mov	ip, #12416
 	mov	r0, #1
-	ldr	r1, .L82+12
+	ldr	r1, .L89+12
 	strh	ip, [r3, #104]	@ movhi
 	str	r0, [r2, #16]
 	strh	r1, [r3, #108]	@ movhi
-	b	.L70
-.L80:
-	ldr	r3, .L82+4
+	b	.L77
+.L87:
+	ldr	r3, .L89+4
 	ldrh	r1, [r3]
 	tst	r1, #64
-	beq	.L70
-	ldr	r1, .L82+8
+	beq	.L77
+	ldr	r1, .L89+8
 	ldrh	r1, [r1]
 	tst	r1, #64
-	bne	.L70
+	bne	.L77
 	mov	r1, #67108864
 	mov	lr, #12416
 	mvn	ip, #0
-	ldr	r0, .L82+16
+	ldr	r0, .L89+16
 	strh	lr, [r1, #104]	@ movhi
 	str	ip, [r2, #16]
 	strh	r0, [r1, #108]	@ movhi
-	b	.L75
-.L83:
+	b	.L82
+.L90:
 	.align	2
-.L82:
+.L89:
 	.word	player
 	.word	oldButtons
 	.word	buttons
@@ -576,65 +628,65 @@ doGame:
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
 	push	{r4, r5, r6, lr}
-	ldr	r5, .L98
+	ldr	r5, .L105
 	bl	checkButtons
 	bl	updateBalls
 	ldr	r3, [r5]
 	cmp	r3, #0
-	beq	.L95
-.L85:
-	ldr	r4, .L98+4
+	beq	.L102
+.L92:
+	ldr	r4, .L105+4
 	ldr	r3, [r4]
-	ldr	r2, .L98+8
+	ldr	r2, .L105+8
 	add	r3, r3, #1
 	str	r3, [r4]
 	mov	lr, pc
 	bx	r2
-	ldr	r3, .L98+12
+	ldr	r3, .L105+12
 	mov	lr, pc
 	bx	r3
-	ldr	r3, .L98+16
+	ldr	r3, .L105+16
 	ldrh	r3, [r3]
 	tst	r3, #8
-	beq	.L86
-	ldr	r3, .L98+20
+	beq	.L93
+	ldr	r3, .L105+20
 	ldrh	r3, [r3]
 	tst	r3, #8
-	beq	.L96
-.L86:
-	ldr	r3, .L98+24
+	beq	.L103
+.L93:
+	ldr	r3, .L105+24
 	ldr	r3, [r3]
 	cmp	r3, #0
-	bne	.L97
+	bne	.L104
 	pop	{r4, r5, r6, lr}
 	bx	lr
-.L95:
-	ldr	r3, .L98+28
+.L102:
+	ldr	r3, .L105+28
 	mov	r0, #1
 	mov	lr, pc
 	bx	r3
 	bl	drawHUD
 	bl	drawPlayer
 	bl	drawBalls
-	b	.L85
-.L97:
+	b	.L92
+.L104:
 	ldr	r0, [r4]
-	ldr	r3, .L98+32
+	ldr	r3, .L105+32
 	mov	lr, pc
 	bx	r3
 	pop	{r4, r5, r6, lr}
 	bx	lr
-.L96:
+.L103:
 	mov	r2, #1
 	ldr	r0, [r4]
-	ldr	r3, .L98+36
+	ldr	r3, .L105+36
 	str	r2, [r5]
 	mov	lr, pc
 	bx	r3
-	b	.L86
-.L99:
+	b	.L93
+.L106:
 	.align	2
-.L98:
+.L105:
 	.word	paused
 	.word	time
 	.word	waitForVBlank

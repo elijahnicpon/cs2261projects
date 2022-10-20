@@ -146,7 +146,7 @@ void drawChar4(int col, int row, char ch, unsigned char colorIndex);
 void drawString4(int col, int row, char *str, unsigned char colorIndex);
 # 4 "game.c" 2
 # 1 "states.h" 1
-enum STATE {START, GAME, PAUSE, END};
+enum STATE {START, GAME, PAUSE, END, HIGHSCORE};
 # 1 "start.h" 1
 void goStart();
 void doStart();
@@ -166,6 +166,10 @@ void doPause();
 void doEnd();
 void goEnd(int score);
 # 6 "states.h" 2
+# 1 "highscore.h" 1
+void doHighScore();
+void goHighScore();
+# 7 "states.h" 2
 
 int state;
 extern int highScore;
@@ -1523,7 +1527,11 @@ void updateBalls() {
     for (int i = 0; i < BALLCOUNT; i++) {
         if (balls[i].active) {
             balls[i].x--;
-            there_is_a_ball = 1;
+            if (balls[i].x < 0) {
+                balls[i].active = 0;
+            } else {
+                there_is_a_ball = 1;
+            }
         }
     }
     if (time % 60 == 0 || !there_is_a_ball) {
@@ -1548,6 +1556,14 @@ void drawHUD() {
     drawRect4(0,120,240,40,0);
     if (time < 60*10) {
         drawString4(2,2, "use the arrow keys to move up/down!",1);
+    }
+    if (time > 1000 && time % 1000 < 100) {
+        drawString4(2,2, "woo! you reached", 1);
+        char buffer[10];
+        int dispval = (time / 1000);
+        sprintf(buffer, "%d", dispval * 1000);
+
+        drawString4(108,2,buffer,4);
     }
     drawString4(2,122, "score:",1);
     char buffer[10];
