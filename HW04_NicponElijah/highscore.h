@@ -1,0 +1,2 @@
+void doHighScore();
+void goHighScore();

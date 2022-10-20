@@ -59,5 +59,5 @@ void update3() {
 }
 
 void fillScreen(u16 color) {
-  drawRectangle(0,0,240,180, color);
+  drawRectangle(0,0,240,160, color);
 }
