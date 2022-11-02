@@ -1,0 +1,2 @@
+void goStart();
+void doStart();
