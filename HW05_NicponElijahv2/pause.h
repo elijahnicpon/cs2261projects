@@ -1,0 +1,2 @@
+void doPause();
+void goPause();

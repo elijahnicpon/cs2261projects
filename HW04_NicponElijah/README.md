@@ -28,5 +28,5 @@
 - readme: ...
 
 ### Additional requirements
-- instructions text prompt at beginning for 10s
+- instructions text prompt at beginning for 10s & checkpoints for each 1000 point milestone
 - high score kept between runs

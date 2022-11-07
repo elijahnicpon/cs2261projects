@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "start.h": "c",
+        "gba.h": "c",
+        "states.h": "c"
+    }
+}

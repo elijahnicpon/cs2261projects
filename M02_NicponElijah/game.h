@@ -1,0 +1,2 @@
+void goGame();
+void doGame();

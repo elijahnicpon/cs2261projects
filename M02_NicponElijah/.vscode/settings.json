@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "start.h": "c",
+        "gba.h": "c",
+        "states.h": "c",
+        "print.h": "c",
+        "start_menu.h": "c",
+        "game.h": "c"
+    }
+}

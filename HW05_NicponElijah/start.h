@@ -1,2 +1,2 @@
 void goStart();
-void doStart();
+void doStart();code
