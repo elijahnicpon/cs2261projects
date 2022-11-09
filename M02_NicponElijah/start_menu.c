@@ -5,19 +5,20 @@
 #include "coral_bg.h"
 #include "start_menus_ss.h"
 
-int state, hOff, vOff;
+int state, hOff, vOff, time;
 OBJ_ATTR shadowOAM[128];
 
 
 void doStartMenu() {
     if (BUTTON_PRESSED(BUTTON_START)) {
-        goGame();
+        goGame(time);
     }
     if (BUTTON_PRESSED(BUTTON_SELECT)) {
         goInfoMenu();
     }
     waitForVBlank();
     hOff += 1;
+    time++;
     REG_BG0HOFF = hOff / 8;
 }
 
@@ -37,6 +38,13 @@ void goStartMenu() {
     DMANow(3, start_menus_ssTiles, &CHARBLOCK[4], start_menus_ssTilesLen/2);
 
     hOff = 0;
+    time = 0;
+
+    //FONTS: MENU TITLE:            HELVETICA 22pt, BOLD
+        //   BUTTON TEXT:           PT MONO 8pt, 
+        //   BUTTON DESCRIPTION:    HELVETICA 14pt, BOLD
+        //   BODY TEXT:             ARIAL 9pt, BOLD
+        // . SM BUTTON DESCRIPTION: HELVETICA 11pt, BOLD
 
     shadowOAM[0].attr0 = ATTR0_4BPP | (30 & 0xFF);
     shadowOAM[0].attr1 = ATTR1_LARGE | (10 & 0x1FF);

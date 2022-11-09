@@ -5,6 +5,8 @@
         "states.h": "c",
         "print.h": "c",
         "start_menu.h": "c",
-        "game.h": "c"
+        "game.h": "c",
+        "death_energy_ss.h": "c",
+        "about_menu.h": "c"
     }
 }

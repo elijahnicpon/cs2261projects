@@ -1,11 +1,11 @@
-# 1 "info_menu.c"
+# 1 "pause.c"
 # 1 "<built-in>"
 # 1 "<command-line>"
-# 1 "info_menu.c"
-# 1 "info_menu.h" 1
-void goInfoMenu();
-void doInfoMenu();
-# 2 "info_menu.c" 2
+# 1 "pause.c"
+# 1 "pause.h" 1
+void goPause();
+void doPause();
+# 2 "pause.c" 2
 # 1 "states.h" 1
 # 1 "start_menu.h" 1
 void goStartMenu();
@@ -65,7 +65,7 @@ typedef struct {
     int agilityUpgradeCost;
     int energyUpgradeCost;
 } Player;
-# 3 "info_menu.c" 2
+# 3 "pause.c" 2
 # 1 "gba.h" 1
 
 
@@ -163,7 +163,7 @@ typedef struct {
 } ANISPRITE;
 # 311 "gba.h"
 typedef void (*ihp)(void);
-# 4 "info_menu.c" 2
+# 4 "pause.c" 2
 
 # 1 "coral_bg.h" 1
 # 22 "coral_bg.h"
@@ -174,39 +174,36 @@ extern const unsigned short coral_bgMap[1024];
 
 
 extern const unsigned short coral_bgPal[256];
-# 6 "info_menu.c" 2
-# 1 "start_menus_ss.h" 1
-# 21 "start_menus_ss.h"
-extern const unsigned short start_menus_ssTiles[16384];
+# 6 "pause.c" 2
+# 1 "pause_and_about_menus_ss.h" 1
+# 21 "pause_and_about_menus_ss.h"
+extern const unsigned short pause_and_about_menus_ssTiles[16384];
 
 
-extern const unsigned short start_menus_ssPal[256];
-# 7 "info_menu.c" 2
+extern const unsigned short pause_and_about_menus_ssPal[256];
+# 7 "pause.c" 2
 
-int state, hOff, vOff;
+int state, hOff, vOff, time;
 OBJ_ATTR shadowOAM[128];
 
-
-void doInfoMenu() {
-    if ((!(~(oldButtons) & ((1<<0))) && (~buttons & ((1<<0))))) {
-        goAboutMenu();
-    }
-    if ((!(~(oldButtons) & ((1<<1))) && (~buttons & ((1<<1))))) {
-
+void doPause() {
+    if ((!(~(oldButtons) & ((1<<3))) && (~buttons & ((1<<3))))) {
+        resumeGame();
     }
     if ((!(~(oldButtons) & ((1<<2))) && (~buttons & ((1<<2))))) {
         goStartMenu();
     }
     waitForVBlank();
     hOff += 1;
+    vOff = 0;
+    time++;
+    (*(volatile unsigned short *)0x04000012) = vOff;
     (*(volatile unsigned short *)0x04000010) = hOff / 8;
 }
 
-void goInfoMenu() {
-
+void goPause() {
     hideSprites();
-
-    state = INFO_MENU;
+    state = PAUSE;
 
     (*(volatile unsigned short*)0x4000008) = (0<<14) | ((0)<<2) | ((31)<<8);
 
@@ -214,22 +211,28 @@ void goInfoMenu() {
     DMANow(3, coral_bgTiles, &((charblock *)0x6000000)[0], 7840/2);
     DMANow(3, coral_bgMap, &((screenblock *)0x6000000)[31], 2048/2);
 
-    DMANow(3, start_menus_ssPal, ((unsigned short *)0x5000200), 512/2);
-    DMANow(3, start_menus_ssTiles, &((charblock *)0x6000000)[4], 32768/2);
+    DMANow(3, pause_and_about_menus_ssPal, ((unsigned short *)0x5000200), 512/2);
+    DMANow(3, pause_and_about_menus_ssTiles, &((charblock *)0x6000000)[4], 32768/2);
 
-    hOff = 0;
+    shadowOAM[0].attr0 = (0 << 13) | (1 << 14) | (46 & 0xFF);
+    shadowOAM[0].attr1 = (3 << 14) | (10 & 0x1FF);
+    shadowOAM[0].attr2 = ((0) * (32) + (0));
+    shadowOAM[1].attr0 = (0 << 13) | (1 << 14) | (46 & 0xFF);
+    shadowOAM[1].attr1 = (3 << 14) | (74 & 0x1FF);
+    shadowOAM[1].attr2 = ((0) * (32) + (8));
 
-    shadowOAM[0].attr0 = (0 << 13) | (40 & 0xFF);
-    shadowOAM[0].attr1 = (3 << 14) | (32 & 0x1FF);
-    shadowOAM[0].attr2 = ((0) * (32) + (24));
 
-    shadowOAM[2].attr0 = (0 << 13) | (30 & 0xFF);
-    shadowOAM[2].attr1 = (3 << 14) | (110 & 0x1FF);
-    shadowOAM[2].attr2 = ((20) * (32) + (16));
+    shadowOAM[2].attr0 = (0 << 13) | (1 << 14) | (40 & 0xFF);
+    shadowOAM[2].attr1 = (3 << 14) | (90 & 0x1FF);
+    shadowOAM[2].attr2 = ((8) * (32) + (0));
 
-    shadowOAM[3].attr0 = (0 << 13) | (30 & 0xFF);
-    shadowOAM[3].attr1 = (3 << 14) | (174 & 0x1FF);
-    shadowOAM[3].attr2 = ((20) * (32) + (24));
+    shadowOAM[3].attr0 = (0 << 13) | (1 << 14) | (40 & 0xFF);
+    shadowOAM[3].attr1 = (3 << 14) | (154 & 0x1FF);
+    shadowOAM[3].attr2 = ((8) * (32) + (8));
+
+    shadowOAM[4].attr0 = (0 << 13) | (1 << 14) | (40 & 0xFF);
+    shadowOAM[4].attr1 = (3 << 14) | (218 & 0x1FF);
+    shadowOAM[4].attr2 = ((8) * (32) + (16));
 
     DMANow(3, shadowOAM, ((OBJ_ATTR*)(0x7000000)), 512);
 }

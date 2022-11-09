@@ -319,17 +319,59 @@ void doInfoMenu();
 # 1 "game.h" 1
 void goGame();
 void doGame();
+void resumeGame();
+void newGameRun();
 # 4 "states.h" 2
+# 1 "pause.h" 1
+void goPause();
+void doPause();
+# 5 "states.h" 2
+# 1 "about_menu.h" 1
+void goAboutMenu();
+void doAboutMenu();
+# 6 "states.h" 2
+# 1 "death_energy.h" 1
+void goDeathEnergy();
+void doDeathEnergy();
+# 7 "states.h" 2
+# 1 "upgrade_menu.h" 1
+void doUpgradeMenu();
+void goUpgradeMenu();
+# 8 "states.h" 2
 
-enum STATE {START_MENU, INFO_MENU, CONTROLS_MENU, ABOUT_MENU, GAME, UPGRADE_MENU, END_ANIMATION, END_MENU, DEATH_ENERGY, DEATH_BAG, DEATH_STRAW, DEATH_6PACK, DEATH_OIL, DAETH_BOAT, DEATH_SHARK, DEATH_CYANIDE, DEATH_BLAST};
+
+enum STATE {START_MENU, INFO_MENU, CONTROLS_MENU, ABOUT_MENU, GAME, PAUSE, UPGRADE_MENU, END_ANIMATION, END_MENU, DEATH_ENERGY, DEATH_BAG, DEATH_STRAW, DEATH_6PACK, DEATH_OIL, DAETH_BOAT, DEATH_SHARK, DEATH_CYANIDE, DEATH_BLAST};
 int state;
-int shells;
+int shells_owned;
+
+typedef struct {
+    int x;
+    int prevX;
+    int y;
+    int frame;
+    int numFrames;
+    int height;
+    int width;
+    int entry_OAM;
+    int shieldsLeft;
+    int agility;
+    int energy;
+    int startingEnergy;
+
+    int shieldUpgradeValue;
+    int agilityUpgradeValue;
+    int energyUpgradeValue;
+
+    int shieldUpgradeCost;
+    int agilityUpgradeCost;
+    int energyUpgradeCost;
+} Player;
 # 4 "main.c" 2
 
-int state, shells;
+int state, shells_owned;
 u16 buttons, oldButtons;
 void init();
-
+# 35 "main.c"
 int main() {
     init();
     mgba_open();
@@ -346,8 +388,24 @@ int main() {
                 doInfoMenu();
                 break;
 
+            case ABOUT_MENU:
+                doAboutMenu();
+                break;
+
             case GAME:
                 doGame();
+                break;
+
+            case PAUSE:
+                doPause();
+                break;
+
+            case DEATH_ENERGY:
+                doDeathEnergy();
+                break;
+
+            case UPGRADE_MENU:
+                doUpgradeMenu();
                 break;
 
             default:
@@ -359,7 +417,7 @@ int main() {
 void init() {
     (*(volatile unsigned short *)0x4000000) = 0 | (1<<8) | (1<<12);
 
-    int shells = 0;
+    int shells_owned = 0;
     u16 oldButtons = 0;
     u16 buttons = (*(volatile unsigned short *)0x04000130);
 

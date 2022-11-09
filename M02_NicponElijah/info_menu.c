@@ -11,7 +11,7 @@ OBJ_ATTR shadowOAM[128];
 
 void doInfoMenu() {
     if (BUTTON_PRESSED(BUTTON_A)) {
-        //goAboutMenu();
+        goAboutMenu();
     }
     if (BUTTON_PRESSED(BUTTON_B)) {
         //goInstructionMenu();

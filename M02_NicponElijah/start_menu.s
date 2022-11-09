@@ -21,60 +21,67 @@ doStartMenu:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	push	{r4, lr}
-	ldr	r4, .L14
-	ldrh	r3, [r4]
+	push	{r4, r5, r6, lr}
+	ldr	r5, .L15
+	ldrh	r3, [r5]
 	tst	r3, #8
-	beq	.L2
-	ldr	r2, .L14+4
-	ldrh	r2, [r2]
-	tst	r2, #8
-	beq	.L12
+	bne	.L10
+	ldr	r4, .L15+4
 .L2:
 	tst	r3, #4
 	beq	.L3
-	ldr	r3, .L14+4
+	ldr	r3, .L15+8
 	ldrh	r3, [r3]
 	tst	r3, #4
-	beq	.L13
+	beq	.L14
 .L3:
-	ldr	r3, .L14+8
+	ldr	r3, .L15+12
 	mov	lr, pc
 	bx	r3
-	ldr	r1, .L14+12
-	ldr	r3, [r1]
-	add	r2, r3, #1
-	cmp	r2, #0
+	ldr	r0, .L15+16
+	ldr	r3, [r0]
+	add	r1, r3, #1
+	cmp	r1, #0
 	addlt	r3, r3, #8
-	movge	r3, r2
-	mov	r0, #67108864
+	movge	r3, r1
+	mov	ip, #67108864
+	ldr	r2, [r4]
 	asr	r3, r3, #3
 	lsl	r3, r3, #16
 	lsr	r3, r3, #16
-	str	r2, [r1]
-	pop	{r4, lr}
-	strh	r3, [r0, #16]	@ movhi
+	add	r2, r2, #1
+	str	r2, [r4]
+	str	r1, [r0]
+	pop	{r4, r5, r6, lr}
+	strh	r3, [ip, #16]	@ movhi
 	bx	lr
-.L13:
-	ldr	r3, .L14+16
+.L10:
+	ldr	r2, .L15+8
+	ldrh	r2, [r2]
+	tst	r2, #8
+	ldr	r4, .L15+4
+	bne	.L2
+	ldr	r3, .L15+20
+	ldr	r0, [r4]
+	mov	lr, pc
+	bx	r3
+	ldrh	r3, [r5]
+	b	.L2
+.L14:
+	ldr	r3, .L15+24
 	mov	lr, pc
 	bx	r3
 	b	.L3
-.L12:
-	ldr	r3, .L14+20
-	mov	lr, pc
-	bx	r3
-	ldrh	r3, [r4]
-	b	.L2
-.L15:
+.L16:
 	.align	2
-.L14:
+.L15:
 	.word	oldButtons
+	.word	time
 	.word	buttons
 	.word	waitForVBlank
 	.word	hOff
-	.word	goInfoMenu
 	.word	goGame
+	.word	goInfoMenu
 	.size	doStartMenu, .-doStartMenu
 	.align	2
 	.global	goStartMenu
@@ -87,44 +94,44 @@ goStartMenu:
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
 	push	{r4, r5, r6, lr}
-	ldr	r3, .L18
+	ldr	r3, .L19
 	mov	lr, pc
 	bx	r3
 	mov	r5, #0
 	mov	r1, #67108864
 	mov	r0, #7936
-	ldr	r2, .L18+4
-	ldr	r4, .L18+8
+	ldr	r2, .L19+4
+	ldr	r4, .L19+8
 	str	r5, [r2]
 	mov	r3, #256
 	strh	r0, [r1, #8]	@ movhi
 	mov	r2, #83886080
 	mov	r0, #3
-	ldr	r1, .L18+12
+	ldr	r1, .L19+12
 	mov	lr, pc
 	bx	r4
 	mov	r3, #3920
 	mov	r2, #100663296
 	mov	r0, #3
-	ldr	r1, .L18+16
+	ldr	r1, .L19+16
 	mov	lr, pc
 	bx	r4
 	mov	r3, #1024
 	mov	r0, #3
-	ldr	r2, .L18+20
-	ldr	r1, .L18+24
+	ldr	r2, .L19+20
+	ldr	r1, .L19+24
 	mov	lr, pc
 	bx	r4
 	mov	r3, #256
 	mov	r0, #3
-	ldr	r2, .L18+28
-	ldr	r1, .L18+32
+	ldr	r2, .L19+28
+	ldr	r1, .L19+32
 	mov	lr, pc
 	bx	r4
 	mov	r3, #16384
 	mov	r0, #3
-	ldr	r2, .L18+36
-	ldr	r1, .L18+40
+	ldr	r2, .L19+36
+	ldr	r1, .L19+40
 	mov	lr, pc
 	bx	r4
 	mov	lr, #640
@@ -132,13 +139,15 @@ goStartMenu:
 	mov	ip, #40
 	mov	r6, #8
 	mov	r2, #648
-	ldr	r3, .L18+44
-	ldr	r1, .L18+48
+	ldr	r3, .L19+44
 	str	r5, [r3]
-	ldr	r3, .L18+52
+	ldr	r3, .L19+48
+	ldr	r1, .L19+52
+	str	r5, [r3]
+	ldr	r3, .L19+56
 	strh	lr, [r1, #20]	@ movhi
 	strh	r3, [r1, #2]	@ movhi
-	ldr	lr, .L18+56
+	ldr	lr, .L19+60
 	add	r3, r3, #64
 	strh	r3, [r1, #10]	@ movhi
 	add	r3, r3, #120
@@ -158,9 +167,9 @@ goStartMenu:
 	bx	r4
 	pop	{r4, r5, r6, lr}
 	bx	lr
-.L19:
+.L20:
 	.align	2
-.L18:
+.L19:
 	.word	hideSprites
 	.word	state
 	.word	DMANow
@@ -173,13 +182,15 @@ goStartMenu:
 	.word	100728832
 	.word	start_menus_ssTiles
 	.word	hOff
+	.word	time
 	.word	shadowOAM
 	.word	-16374
 	.word	-16254
 	.size	goStartMenu, .-goStartMenu
 	.comm	shadowOAM,1024,4
+	.comm	time,4,4
 	.comm	vOff,4,4
 	.comm	hOff,4,4
-	.comm	shells,4,4
+	.comm	shells_owned,4,4
 	.comm	state,4,4
 	.ident	"GCC: (devkitARM release 53) 9.1.0"

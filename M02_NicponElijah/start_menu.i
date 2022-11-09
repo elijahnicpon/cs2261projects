@@ -18,11 +18,53 @@ void doInfoMenu();
 # 1 "game.h" 1
 void goGame();
 void doGame();
+void resumeGame();
+void newGameRun();
 # 4 "states.h" 2
+# 1 "pause.h" 1
+void goPause();
+void doPause();
+# 5 "states.h" 2
+# 1 "about_menu.h" 1
+void goAboutMenu();
+void doAboutMenu();
+# 6 "states.h" 2
+# 1 "death_energy.h" 1
+void goDeathEnergy();
+void doDeathEnergy();
+# 7 "states.h" 2
+# 1 "upgrade_menu.h" 1
+void doUpgradeMenu();
+void goUpgradeMenu();
+# 8 "states.h" 2
 
-enum STATE {START_MENU, INFO_MENU, CONTROLS_MENU, ABOUT_MENU, GAME, UPGRADE_MENU, END_ANIMATION, END_MENU, DEATH_ENERGY, DEATH_BAG, DEATH_STRAW, DEATH_6PACK, DEATH_OIL, DAETH_BOAT, DEATH_SHARK, DEATH_CYANIDE, DEATH_BLAST};
+
+enum STATE {START_MENU, INFO_MENU, CONTROLS_MENU, ABOUT_MENU, GAME, PAUSE, UPGRADE_MENU, END_ANIMATION, END_MENU, DEATH_ENERGY, DEATH_BAG, DEATH_STRAW, DEATH_6PACK, DEATH_OIL, DAETH_BOAT, DEATH_SHARK, DEATH_CYANIDE, DEATH_BLAST};
 int state;
-int shells;
+int shells_owned;
+
+typedef struct {
+    int x;
+    int prevX;
+    int y;
+    int frame;
+    int numFrames;
+    int height;
+    int width;
+    int entry_OAM;
+    int shieldsLeft;
+    int agility;
+    int energy;
+    int startingEnergy;
+
+    int shieldUpgradeValue;
+    int agilityUpgradeValue;
+    int energyUpgradeValue;
+
+    int shieldUpgradeCost;
+    int agilityUpgradeCost;
+    int energyUpgradeCost;
+} Player;
 # 3 "start_menu.c" 2
 # 1 "gba.h" 1
 
@@ -141,19 +183,20 @@ extern const unsigned short start_menus_ssTiles[16384];
 extern const unsigned short start_menus_ssPal[256];
 # 7 "start_menu.c" 2
 
-int state, hOff, vOff;
+int state, hOff, vOff, time;
 OBJ_ATTR shadowOAM[128];
 
 
 void doStartMenu() {
     if ((!(~(oldButtons) & ((1<<3))) && (~buttons & ((1<<3))))) {
-        goGame();
+        goGame(time);
     }
     if ((!(~(oldButtons) & ((1<<2))) && (~buttons & ((1<<2))))) {
         goInfoMenu();
     }
     waitForVBlank();
     hOff += 1;
+    time++;
     (*(volatile unsigned short *)0x04000010) = hOff / 8;
 }
 
@@ -173,6 +216,13 @@ void goStartMenu() {
     DMANow(3, start_menus_ssTiles, &((charblock *)0x6000000)[4], 32768/2);
 
     hOff = 0;
+    time = 0;
+
+
+
+
+
+
 
     shadowOAM[0].attr0 = (0 << 13) | (30 & 0xFF);
     shadowOAM[0].attr1 = (3 << 14) | (10 & 0x1FF);
