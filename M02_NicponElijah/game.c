@@ -337,13 +337,13 @@ void goGame(int seed) {
 
     REG_DISPCTL = BG0_ENABLE | BG1_ENABLE | SPRITE_ENABLE | MODE0;
 
-    REG_BG1CNT = BG_SIZE_SMALL | BG_CHARBLOCK(0) | BG_SCREENBLOCK(31);
+    REG_BG1CNT = 1 | BG_SIZE_SMALL | BG_CHARBLOCK(0) | BG_SCREENBLOCK(31);
 
     DMANow(3, game_bgPal, PALETTE, game_bgPalLen/2);
     DMANow(3, game_bgTiles, &CHARBLOCK[0], game_bgTilesLen/2);
     DMANow(3, game_bgMap, &SCREENBLOCK[31], game_bgMapLen/2);
 
-    REG_BG0CNT = BG_SIZE_SMALL | BG_CHARBLOCK(1) | BG_SCREENBLOCK(30);
+    REG_BG0CNT = 0 | BG_SIZE_SMALL | BG_CHARBLOCK(1) | BG_SCREENBLOCK(30);
 
     DMANow(3, game_clouds_bgPal, PALETTE + 32, game_clouds_bgPalLen/2);
     DMANow(3, game_clouds_bgTiles, &CHARBLOCK[1], game_clouds_bgTilesLen/2);

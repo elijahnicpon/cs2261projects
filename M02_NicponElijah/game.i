@@ -44,6 +44,7 @@ void goUpgradeMenu();
 enum STATE {START_MENU, INFO_MENU, CONTROLS_MENU, ABOUT_MENU, GAME, PAUSE, UPGRADE_MENU, END_ANIMATION, END_MENU, DEATH_ENERGY, DEATH_BAG, DEATH_STRAW, DEATH_6PACK, DEATH_OIL, DAETH_BOAT, DEATH_SHARK, DEATH_CYANIDE, DEATH_BLAST};
 int state;
 int shells_owned;
+int time;
 
 typedef struct {
     int x;
@@ -1722,13 +1723,13 @@ void goGame(int seed) {
 
     (*(volatile unsigned short *)0x4000000) = (1<<8) | (1<<9) | (1<<12) | 0;
 
-    (*(volatile unsigned short*)0x400000A) = (0<<14) | ((0)<<2) | ((31)<<8);
+    (*(volatile unsigned short*)0x400000A) = 1 | (0<<14) | ((0)<<2) | ((31)<<8);
 
     DMANow(3, game_bgPal, ((unsigned short *)0x5000000), 512/2);
     DMANow(3, game_bgTiles, &((charblock *)0x6000000)[0], 352/2);
     DMANow(3, game_bgMap, &((screenblock *)0x6000000)[31], 2048/2);
 
-    (*(volatile unsigned short*)0x4000008) = (0<<14) | ((1)<<2) | ((30)<<8);
+    (*(volatile unsigned short*)0x4000008) = 0 | (0<<14) | ((1)<<2) | ((30)<<8);
 
     DMANow(3, game_clouds_bgPal, ((unsigned short *)0x5000000) + 32, 480/2);
     DMANow(3, game_clouds_bgTiles, &((charblock *)0x6000000)[1], 3552/2);

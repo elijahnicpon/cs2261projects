@@ -1159,78 +1159,78 @@ goGame:
 	mov	lr, pc
 	bx	r3
 	mov	r6, #67108864
-	mov	r1, #4864
-	mov	r0, #7936
+	mov	r2, #4864
 	mov	r4, #4
-	ldr	r2, .L125+8
-	ldr	r5, .L125+12
-	str	r4, [r2]
-	mov	r3, #256
-	strh	r1, [r6]	@ movhi
-	mov	r2, #83886080
-	strh	r0, [r6, #10]	@ movhi
-	ldr	r1, .L125+16
+	ldr	r3, .L125+8
+	ldr	r1, .L125+12
+	ldr	r5, .L125+16
+	str	r4, [r3]
 	mov	r0, #3
+	strh	r2, [r6]	@ movhi
+	mov	r3, #256
+	strh	r1, [r6, #10]	@ movhi
+	mov	r2, #83886080
+	ldr	r1, .L125+20
 	mov	lr, pc
 	bx	r5
 	mov	r3, #176
 	mov	r2, #100663296
 	mov	r0, #3
-	ldr	r1, .L125+20
+	ldr	r1, .L125+24
 	mov	lr, pc
 	bx	r5
 	mov	r3, #1024
 	mov	r0, #3
-	ldr	r2, .L125+24
-	ldr	r1, .L125+28
+	ldr	r2, .L125+28
+	ldr	r1, .L125+32
 	mov	lr, pc
 	bx	r5
 	mov	r10, #128
-	ldr	r2, .L125+32
+	ldr	r2, .L125+36
 	mov	r3, #240
 	strh	r2, [r6, #8]	@ movhi
 	mov	r0, #3
-	ldr	r2, .L125+36
-	ldr	r1, .L125+40
+	ldr	r2, .L125+40
+	ldr	r1, .L125+44
 	mov	lr, pc
 	bx	r5
 	mov	r3, #1776
 	mov	r0, #3
-	ldr	r2, .L125+44
-	ldr	r1, .L125+48
+	ldr	r2, .L125+48
+	ldr	r1, .L125+52
 	mov	lr, pc
 	bx	r5
 	mov	r3, #1024
 	mov	r0, #3
-	ldr	r2, .L125+52
-	ldr	r1, .L125+56
+	ldr	r2, .L125+56
+	ldr	r1, .L125+60
 	mov	lr, pc
 	bx	r5
 	mov	fp, #132
 	mov	r3, #256
 	mov	r0, #3
-	ldr	r2, .L125+60
-	ldr	r1, .L125+64
+	ldr	r2, .L125+64
+	ldr	r1, .L125+68
 	mov	lr, pc
 	bx	r5
 	mov	r3, #16384
 	mov	r0, #3
-	ldr	r2, .L125+68
-	ldr	r1, .L125+72
+	ldr	r2, .L125+72
+	ldr	r1, .L125+76
 	mov	lr, pc
 	bx	r5
 	mov	r0, #3
-	ldr	r1, .L125+76
+	ldr	r1, .L125+80
 	strh	r10, [r1, #4]	@ movhi
-	ldr	r10, .L125+80
+	ldr	r10, .L125+84
 	strh	r10, [r1, #2]	@ movhi
 	add	r10, r10, #32
 	strh	r10, [r1, #10]	@ movhi
-	ldr	r10, .L125+84
+	ldr	r10, .L125+88
 	strh	fp, [r1, #12]	@ movhi
 	strh	r10, [r1]	@ movhi
 	strh	r10, [r1, #8]	@ movhi
-	ldr	r1, .L125+88
+	ldr	r1, .L125+92
 	mov	r3, #0
 	mov	ip, #8
 	mov	r9, #9
@@ -1240,7 +1240,7 @@ goGame:
 	mov	lr, #16
 	str	r0, [r1, #28]
 	mov	r0, #2
-	ldr	r2, .L125+92
+	ldr	r2, .L125+96
 	ldr	r2, [r2]
 	str	ip, [r1, #16]
 	cmp	r2, r3
@@ -1261,7 +1261,7 @@ goGame:
 	ble	.L119
 	mov	ip, #10
 	mov	r0, #7
-	ldr	r1, .L125+96
+	ldr	r1, .L125+100
 	add	r2, r2, r4
 .L120:
 	str	r4, [r1, #24]
@@ -1277,7 +1277,7 @@ goGame:
 	mov	r3, #9
 	mov	ip, #2
 	mov	r0, #136
-	ldr	r2, .L125+76
+	ldr	r2, .L125+80
 	add	r1, r2, #224
 .L121:
 	strh	r3, [r2, #242]	@ movhi
@@ -1290,12 +1290,12 @@ goGame:
 	lsr	r3, r3, #16
 	bne	.L121
 	mov	ip, #0
-	ldr	r0, .L125+100
+	ldr	r0, .L125+104
 	mov	r3, #512
 	str	ip, [r0]
 	mov	r2, #117440512
 	mov	r0, #3
-	ldr	r1, .L125+76
+	ldr	r1, .L125+80
 	mov	lr, pc
 	bx	r5
 	pop	{r3, r4, r5, r6, r7, r8, r9, r10, fp, lr}
@@ -1306,6 +1306,7 @@ goGame:
 	.word	srand
 	.word	hideSprites
 	.word	state
+	.word	7937
 	.word	DMANow
 	.word	game_bgPal
 	.word	game_bgTiles
@@ -1380,10 +1381,10 @@ initPlayer:
 	.global	playerFrames
 	.comm	player,72,4
 	.comm	shadowOAM,1024,4
-	.comm	time,4,4
 	.comm	gameSpeed,4,4
 	.comm	cloudVOff,4,4
 	.comm	vOff,4,4
+	.comm	time,4,4
 	.comm	shells_owned,4,4
 	.comm	state,4,4
 	.data

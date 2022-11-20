@@ -343,6 +343,7 @@ void goUpgradeMenu();
 enum STATE {START_MENU, INFO_MENU, CONTROLS_MENU, ABOUT_MENU, GAME, PAUSE, UPGRADE_MENU, END_ANIMATION, END_MENU, DEATH_ENERGY, DEATH_BAG, DEATH_STRAW, DEATH_6PACK, DEATH_OIL, DAETH_BOAT, DEATH_SHARK, DEATH_CYANIDE, DEATH_BLAST};
 int state;
 int shells_owned;
+int time;
 
 typedef struct {
     int x;
@@ -371,7 +372,7 @@ typedef struct {
 int state, shells_owned;
 u16 buttons, oldButtons;
 void init();
-# 35 "main.c"
+# 36 "main.c"
 int main() {
     init();
     mgba_open();

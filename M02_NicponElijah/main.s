@@ -159,6 +159,7 @@ init:
 	.size	init, .-init
 	.comm	oldButtons,2,2
 	.comm	buttons,2,2
+	.comm	time,4,4
 	.comm	shells_owned,4,4
 	.comm	state,4,4
 	.ident	"GCC: (devkitARM release 53) 9.1.0"
