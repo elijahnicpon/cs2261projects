@@ -180,4 +180,6 @@ goInfoMenu:
 	.comm	time,4,4
 	.comm	shells_owned,4,4
 	.comm	state,4,4
+	.comm	soundB,32,4
+	.comm	soundA,32,4
 	.ident	"GCC: (devkitARM release 53) 9.1.0"

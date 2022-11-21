@@ -82,6 +82,9 @@ int main() {
 void init() {
     REG_DISPCTL = MODE0 | BG0_ENABLE | SPRITE_ENABLE;
 
+    setupInterrupts();
+    setupSounds();
+
     int shells_owned = 0; 
     u16 oldButtons = 0;
     u16 buttons = BUTTONS;

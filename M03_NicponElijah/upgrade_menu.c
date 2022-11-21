@@ -5,6 +5,9 @@
 #include "coral_bg.h"
 #include "upgrade_menu_ss.h"
 
+#include "error.h"
+#include "success.h"
+
 int state, hOff, vOff, time;
 OBJ_ATTR shadowOAM[128];
 Player player;
@@ -61,10 +64,12 @@ void attemptUpgradeEnergy() {
         updateEnergy();
         updateShield();
         DMANow(3, shadowOAM, OAM, 512);
-        //TODO: play success sound
+        //: play success sound
+        playSoundB(success_data, success_length - 500, 0);
 
     } else {
         //TODO: play failed sound
+        playSoundB(error_data, error_length - 500, 0);
     }
 }
 
@@ -77,10 +82,12 @@ void attemptUpgradeShield() {
         updateEnergy();
         updateShield();
         DMANow(3, shadowOAM, OAM, 512);
-        //TODO: play success sound
+        //: play success sound
+        playSoundB(success_data, success_length - 500, 0);
 
     } else {
         //TODO: play failed sound
+        playSoundB(error_data, error_length - 500, 0);
     }
 }
 
@@ -151,10 +158,12 @@ void attemptUpgradeAgility() {
         updateEnergy();
         updateShield();
         DMANow(3, shadowOAM, OAM, 512);
-        //TODO: play success sound
+        //: play success sound
+        playSoundB(success_data, success_length - 500, 0);
 
     } else {
         //TODO: play failed sound
+        playSoundB(error_data, error_length - 500, 0);
     }
 }
 

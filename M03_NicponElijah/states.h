@@ -6,6 +6,7 @@
 #include "death_energy.h"
 #include "upgrade_menu.h"
 #include "death_plastic.h"
+#include "sound.h"
 
 
 enum STATE {START_MENU, INFO_MENU, CONTROLS_MENU, ABOUT_MENU, GAME, PAUSE, UPGRADE_MENU, END_ANIMATION, END_MENU, DEATH_ENERGY, DEATH_PLASTIC, DEATH_OIL, DAETH_BOAT, DEATH_SHARK, DEATH_CYANIDE, DEATH_BLAST};

@@ -34,6 +34,16 @@ death_plastic_ssPal:
 	.short	0
 	.short	0
 	.short	0
+	.short	31743
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	20393
+	.short	0
+	.short	7815
 	.short	0
 	.short	0
 	.short	0
@@ -47,6 +57,9 @@ death_plastic_ssPal:
 	.short	0
 	.short	0
 	.short	0
+	.short	15775
+	.short	0
+	.short	10463
 	.short	0
 	.short	0
 	.short	0
@@ -60,22 +73,9 @@ death_plastic_ssPal:
 	.short	0
 	.short	0
 	.short	0
+	.short	28287
 	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
+	.short	22808
 	.short	0
 	.short	0
 	.short	0
@@ -4716,14 +4716,6 @@ death_plastic_ssTiles:
 	.short	0
 	.short	0
 	.short	0
-	.short	8738
-	.short	8738
-	.short	8738
-	.short	8738
-	.short	8738
-	.short	26210
-	.short	26214
-	.short	30582
 	.short	0
 	.short	0
 	.short	0
@@ -4732,14 +4724,6 @@ death_plastic_ssTiles:
 	.short	0
 	.short	0
 	.short	0
-	.short	8738
-	.short	34
-	.short	26146
-	.short	102
-	.short	30566
-	.short	119
-	.short	26231
-	.short	102
 	.short	0
 	.short	0
 	.short	0
@@ -5220,12 +5204,6 @@ death_plastic_ssTiles:
 	.short	0
 	.short	0
 	.short	0
-	.short	30583
-	.short	26215
-	.short	26214
-	.short	8742
-	.short	8738
-	.short	8738
 	.short	0
 	.short	0
 	.short	0
@@ -5236,12 +5214,34 @@ death_plastic_ssTiles:
 	.short	0
 	.short	0
 	.short	0
-	.short	8806
-	.short	34
-	.short	8738
-	.short	34
-	.short	8738
-	.short	34
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
 	.short	0
 	.short	0
 	.short	0

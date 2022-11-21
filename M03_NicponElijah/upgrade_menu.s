@@ -420,22 +420,34 @@ attemptUpgradeEnergy:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	ldr	r1, .L45
-	ldr	r3, .L45+4
-	ldr	r2, [r1, #56]
-	ldr	r0, .L45+8
-	add	r3, r3, r2, lsl #2
-	ldr	ip, [r3, #24]
-	ldr	r3, [r0]
-	cmp	r2, #4
-	cmple	ip, r3
-	bxgt	lr
+	ldr	ip, .L41
+	ldr	r2, .L41+4
+	ldr	r3, [ip, #56]
 	push	{r4, lr}
-	sub	r3, r3, ip
-	add	r2, r2, #1
-	str	r3, [r0]
-	str	r2, [r1, #56]
-	ldr	r4, .L45+12
+	ldr	lr, .L41+8
+	add	r2, r2, r3, lsl #2
+	ldr	r0, [r2, #24]
+	ldr	r1, [lr]
+	cmp	r3, #4
+	cmple	r0, r1
+	movle	r2, #1
+	movgt	r2, #0
+	ble	.L40
+	ldr	r3, .L41+12
+	ldr	r1, [r3]
+	ldr	r0, .L41+16
+	ldr	r3, .L41+20
+	sub	r1, r1, #500
+	mov	lr, pc
+	bx	r3
+	pop	{r4, lr}
+	bx	lr
+.L40:
+	sub	r1, r1, r0
+	add	r3, r3, #1
+	str	r1, [lr]
+	str	r3, [ip, #56]
+	ldr	r4, .L41+24
 	bl	updateShellsOwned
 	bl	updateAgility
 	bl	updateEnergy
@@ -443,19 +455,32 @@ attemptUpgradeEnergy:
 	mov	r3, #512
 	mov	r2, #117440512
 	mov	r0, #3
-	ldr	r1, .L45+16
+	ldr	r1, .L41+28
 	mov	lr, pc
 	bx	r4
+	ldr	r3, .L41+32
+	ldr	r1, [r3]
+	mov	r2, #0
+	ldr	r0, .L41+36
+	ldr	r3, .L41+20
+	sub	r1, r1, #500
+	mov	lr, pc
+	bx	r3
 	pop	{r4, lr}
 	bx	lr
-.L46:
+.L42:
 	.align	2
-.L45:
+.L41:
 	.word	player
 	.word	.LANCHOR0
 	.word	shells_owned
+	.word	error_length
+	.word	error_data
+	.word	playSoundB
 	.word	DMANow
 	.word	shadowOAM
+	.word	success_length
+	.word	success_data
 	.size	attemptUpgradeEnergy, .-attemptUpgradeEnergy
 	.align	2
 	.global	attemptUpgradeShield
@@ -467,21 +492,33 @@ attemptUpgradeShield:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	ldr	r1, .L56
-	ldr	r2, .L56+4
-	ldr	r3, [r1, #48]
-	ldr	r0, .L56+8
-	ldr	ip, [r2, r3, lsl #2]
-	ldr	r2, [r0]
-	cmp	r3, #4
-	cmple	ip, r2
-	bxgt	lr
+	ldr	ip, .L48
+	ldr	r2, .L48+4
+	ldr	r3, [ip, #48]
 	push	{r4, lr}
-	sub	r2, r2, ip
+	ldr	lr, .L48+8
+	ldr	r0, [r2, r3, lsl #2]
+	ldr	r1, [lr]
+	cmp	r3, #4
+	cmple	r0, r1
+	movle	r2, #1
+	movgt	r2, #0
+	ble	.L47
+	ldr	r3, .L48+12
+	ldr	r1, [r3]
+	ldr	r0, .L48+16
+	ldr	r3, .L48+20
+	sub	r1, r1, #500
+	mov	lr, pc
+	bx	r3
+	pop	{r4, lr}
+	bx	lr
+.L47:
+	sub	r1, r1, r0
 	add	r3, r3, #1
-	str	r2, [r0]
-	str	r3, [r1, #48]
-	ldr	r4, .L56+12
+	str	r1, [lr]
+	str	r3, [ip, #48]
+	ldr	r4, .L48+24
 	bl	updateShellsOwned
 	bl	updateAgility
 	bl	updateEnergy
@@ -489,19 +526,32 @@ attemptUpgradeShield:
 	mov	r3, #512
 	mov	r2, #117440512
 	mov	r0, #3
-	ldr	r1, .L56+16
+	ldr	r1, .L48+28
 	mov	lr, pc
 	bx	r4
+	ldr	r3, .L48+32
+	ldr	r1, [r3]
+	mov	r2, #0
+	ldr	r0, .L48+36
+	ldr	r3, .L48+20
+	sub	r1, r1, #500
+	mov	lr, pc
+	bx	r3
 	pop	{r4, lr}
 	bx	lr
-.L57:
+.L49:
 	.align	2
-.L56:
+.L48:
 	.word	player
 	.word	.LANCHOR0
 	.word	shells_owned
+	.word	error_length
+	.word	error_data
+	.word	playSoundB
 	.word	DMANow
 	.word	shadowOAM
+	.word	success_length
+	.word	success_data
 	.size	attemptUpgradeShield, .-attemptUpgradeShield
 	.align	2
 	.global	attemptUpgradeAgility
@@ -513,22 +563,34 @@ attemptUpgradeAgility:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	ldr	r1, .L67
-	ldr	r3, .L67+4
-	ldr	r2, [r1, #52]
-	ldr	r0, .L67+8
-	add	r3, r3, r2, lsl #2
-	ldr	ip, [r3, #48]
-	ldr	r3, [r0]
-	cmp	r2, #4
-	cmple	ip, r3
-	bxgt	lr
+	ldr	ip, .L55
+	ldr	r2, .L55+4
+	ldr	r3, [ip, #52]
 	push	{r4, lr}
-	sub	r3, r3, ip
-	add	r2, r2, #1
-	str	r3, [r0]
-	str	r2, [r1, #52]
-	ldr	r4, .L67+12
+	ldr	lr, .L55+8
+	add	r2, r2, r3, lsl #2
+	ldr	r0, [r2, #48]
+	ldr	r1, [lr]
+	cmp	r3, #4
+	cmple	r0, r1
+	movle	r2, #1
+	movgt	r2, #0
+	ble	.L54
+	ldr	r3, .L55+12
+	ldr	r1, [r3]
+	ldr	r0, .L55+16
+	ldr	r3, .L55+20
+	sub	r1, r1, #500
+	mov	lr, pc
+	bx	r3
+	pop	{r4, lr}
+	bx	lr
+.L54:
+	sub	r1, r1, r0
+	add	r3, r3, #1
+	str	r1, [lr]
+	str	r3, [ip, #52]
+	ldr	r4, .L55+24
 	bl	updateShellsOwned
 	bl	updateAgility
 	bl	updateEnergy
@@ -536,19 +598,32 @@ attemptUpgradeAgility:
 	mov	r3, #512
 	mov	r2, #117440512
 	mov	r0, #3
-	ldr	r1, .L67+16
+	ldr	r1, .L55+28
 	mov	lr, pc
 	bx	r4
+	ldr	r3, .L55+32
+	ldr	r1, [r3]
+	mov	r2, #0
+	ldr	r0, .L55+36
+	ldr	r3, .L55+20
+	sub	r1, r1, #500
+	mov	lr, pc
+	bx	r3
 	pop	{r4, lr}
 	bx	lr
-.L68:
+.L56:
 	.align	2
-.L67:
+.L55:
 	.word	player
 	.word	.LANCHOR0
 	.word	shells_owned
+	.word	error_length
+	.word	error_data
+	.word	playSoundB
 	.word	DMANow
 	.word	shadowOAM
+	.word	success_length
+	.word	success_data
 	.size	attemptUpgradeAgility, .-attemptUpgradeAgility
 	.align	2
 	.global	doUpgradeMenu
@@ -561,53 +636,53 @@ doUpgradeMenu:
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
 	push	{r4, lr}
-	ldr	r4, .L93
+	ldr	r4, .L81
 	ldrh	r3, [r4]
 	tst	r3, #64
-	beq	.L70
-	ldr	r2, .L93+4
+	beq	.L58
+	ldr	r2, .L81+4
 	ldrh	r2, [r2]
 	tst	r2, #64
-	beq	.L88
-.L70:
+	beq	.L76
+.L58:
 	tst	r3, #16
-	beq	.L71
-	ldr	r2, .L93+4
+	beq	.L59
+	ldr	r2, .L81+4
 	ldrh	r2, [r2]
 	tst	r2, #16
-	beq	.L89
-.L71:
+	beq	.L77
+.L59:
 	tst	r3, #128
-	beq	.L72
-	ldr	r2, .L93+4
+	beq	.L60
+	ldr	r2, .L81+4
 	ldrh	r2, [r2]
 	tst	r2, #128
-	beq	.L90
-.L72:
+	beq	.L78
+.L60:
 	tst	r3, #8
-	beq	.L73
-	ldr	r3, .L93+4
+	beq	.L61
+	ldr	r3, .L81+4
 	ldrh	r3, [r3]
 	tst	r3, #8
-	beq	.L91
-.L73:
-	ldr	r3, .L93+8
+	beq	.L79
+.L61:
+	ldr	r3, .L81+8
 	ldrh	r2, [r3, #48]
 	tst	r2, #512
-	bne	.L74
+	bne	.L62
 	ldrh	r2, [r3, #48]
 	tst	r2, #256
-	bne	.L74
+	bne	.L62
 	ldrh	r3, [r3, #48]
 	tst	r3, #4
-	bne	.L74
-	ldr	r3, .L93+12
+	bne	.L62
+	ldr	r3, .L81+12
 	ldr	r2, [r3]
 	cmp	r2, #0
-	beq	.L92
-.L74:
-	ldr	r4, .L93+16
-	ldr	r3, .L93+20
+	beq	.L80
+.L62:
+	ldr	r4, .L81+16
+	ldr	r3, .L81+20
 	mov	lr, pc
 	bx	r3
 	ldr	r3, [r4]
@@ -617,12 +692,12 @@ doUpgradeMenu:
 	movge	r3, r1
 	mov	ip, #0
 	mov	r0, #67108864
-	ldr	lr, .L93+24
+	ldr	lr, .L81+24
 	asr	r3, r3, #3
 	ldr	r2, [lr]
 	str	r1, [r4]
 	lsl	r3, r3, #16
-	ldr	r1, .L93+28
+	ldr	r1, .L81+28
 	lsr	r3, r3, #16
 	add	r2, r2, #1
 	str	r2, [lr]
@@ -631,32 +706,32 @@ doUpgradeMenu:
 	strh	ip, [r0, #18]	@ movhi
 	strh	r3, [r0, #16]	@ movhi
 	bx	lr
-.L91:
-	ldr	r3, .L93+32
+.L79:
+	ldr	r3, .L81+32
 	mov	lr, pc
 	bx	r3
-	b	.L73
-.L88:
+	b	.L61
+.L76:
 	bl	attemptUpgradeAgility
 	ldrh	r3, [r4]
-	b	.L70
-.L89:
+	b	.L58
+.L77:
 	bl	attemptUpgradeEnergy
 	ldrh	r3, [r4]
-	b	.L71
-.L90:
+	b	.L59
+.L78:
 	bl	attemptUpgradeShield
 	ldrh	r3, [r4]
-	b	.L72
-.L92:
+	b	.L60
+.L80:
 	mov	r0, #1
-	ldr	r1, .L93+36
+	ldr	r1, .L81+36
 	ldr	r2, [r1]
 	add	r2, r2, #4992
 	add	r2, r2, #8
 	str	r2, [r1]
 	str	r0, [r3]
-	ldr	r4, .L93+40
+	ldr	r4, .L81+40
 	bl	updateAgility
 	bl	updateEnergy
 	bl	updateShield
@@ -664,13 +739,13 @@ doUpgradeMenu:
 	mov	r3, #512
 	mov	r2, #117440512
 	mov	r0, #3
-	ldr	r1, .L93+44
+	ldr	r1, .L81+44
 	mov	lr, pc
 	bx	r4
-	b	.L74
-.L94:
+	b	.L62
+.L82:
 	.align	2
-.L93:
+.L81:
 	.word	oldButtons
 	.word	buttons
 	.word	67109120
@@ -695,50 +770,50 @@ goUpgradeMenu:
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
 	push	{r3, r4, r5, r6, r7, r8, r9, r10, fp, lr}
-	ldr	r3, .L97
+	ldr	r3, .L85
 	mov	lr, pc
 	bx	r3
 	mov	ip, #6
 	mov	r1, #67108864
 	mov	r0, #7936
-	ldr	r2, .L97+4
-	ldr	r5, .L97+8
+	ldr	r2, .L85+4
+	ldr	r5, .L85+8
 	str	ip, [r2]
 	mov	r3, #256
 	strh	r0, [r1, #8]	@ movhi
 	mov	r2, #83886080
 	mov	r0, #3
-	ldr	r1, .L97+12
+	ldr	r1, .L85+12
 	mov	lr, pc
 	bx	r5
 	mov	r3, #3920
 	mov	r2, #100663296
 	mov	r0, #3
-	ldr	r1, .L97+16
+	ldr	r1, .L85+16
 	mov	lr, pc
 	bx	r5
 	mov	r3, #1024
 	mov	r0, #3
-	ldr	r2, .L97+20
-	ldr	r1, .L97+24
+	ldr	r2, .L85+20
+	ldr	r1, .L85+24
 	mov	lr, pc
 	bx	r5
 	mov	r3, #256
 	mov	r0, #3
-	ldr	r2, .L97+28
-	ldr	r1, .L97+32
+	ldr	r2, .L85+28
+	ldr	r1, .L85+32
 	mov	lr, pc
 	bx	r5
 	mov	r3, #16384
 	mov	r0, #3
-	ldr	r2, .L97+36
-	ldr	r1, .L97+40
+	ldr	r2, .L85+36
+	ldr	r1, .L85+40
 	mov	lr, pc
 	bx	r5
 	mov	r1, #288
 	mov	ip, #4
-	ldr	r4, .L97+44
-	ldr	r0, .L97+48
+	ldr	r4, .L85+44
+	ldr	r0, .L85+48
 	add	r3, r4, r1
 	add	r2, r4, #292
 	strh	ip, [r3]	@ movhi
@@ -758,7 +833,7 @@ goUpgradeMenu:
 	mov	r7, #784
 	mov	r6, #416
 	mov	lr, #424
-	ldr	r0, .L97+52
+	ldr	r0, .L85+52
 	add	ip, r4, #816
 	strh	r1, [ip]	@ movhi
 	strh	r0, [ip, #2]	@ movhi
@@ -773,7 +848,7 @@ goUpgradeMenu:
 	strh	r0, [ip, #2]	@ movhi
 	add	ip, r4, #832
 	strh	r1, [ip]	@ movhi
-	ldr	r1, .L97+56
+	ldr	r1, .L85+56
 	strh	r1, [ip, #2]	@ movhi
 	add	ip, r4, #848
 	strh	r0, [ip, #2]	@ movhi
@@ -790,12 +865,12 @@ goUpgradeMenu:
 	strh	r8, [r2]	@ movhi
 	add	r2, r4, #860
 	strh	r7, [r2]	@ movhi
-	ldr	r2, .L97+60
+	ldr	r2, .L85+60
 	strh	r1, [r0, #2]	@ movhi
 	add	r1, r4, #864
 	strh	r2, [r1, #2]	@ movhi
-	ldr	r2, .L97+64
-	ldr	r0, .L97+68
+	ldr	r2, .L85+64
+	ldr	r0, .L85+68
 	strh	r2, [r1]	@ movhi
 	add	r1, r4, #868
 	strh	r6, [r1]	@ movhi
@@ -804,7 +879,7 @@ goUpgradeMenu:
 	add	r0, r4, #876
 	strh	lr, [r0]	@ movhi
 	mov	lr, #432	@ movhi
-	ldr	ip, .L97+72
+	ldr	ip, .L85+72
 	strh	r2, [r1]	@ movhi
 	add	r1, r4, #880
 	strh	ip, [r1, #2]	@ movhi
@@ -818,9 +893,9 @@ goUpgradeMenu:
 	bx	r5
 	pop	{r3, r4, r5, r6, r7, r8, r9, r10, fp, lr}
 	bx	lr
-.L98:
+.L86:
 	.align	2
-.L97:
+.L85:
 	.word	hideSprites
 	.word	state
 	.word	DMANow
@@ -852,6 +927,8 @@ goUpgradeMenu:
 	.comm	time,4,4
 	.comm	shells_owned,4,4
 	.comm	state,4,4
+	.comm	soundB,32,4
+	.comm	soundA,32,4
 	.data
 	.align	2
 	.set	.LANCHOR0,. + 0

@@ -7,6 +7,8 @@
 #include "game_clouds_bg.h"
 #include "game_clouds_SHADOW_bg.h"
 
+#include "coin.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -154,7 +156,8 @@ void updateAndDrawShells() {
             if (collision(shells[i].x / 8, shells[i].y / 8, shells[i].height, shells[i].width, player.x / 8, player.y, player.width, player.height)) {
                 shells[i].active = 0;
                 shells_owned += shells[i].value;
-                //TODO: play good sound
+                //TODO: play coin sound
+                playSoundB(coin_data, coin_length - 500, 0);
             }
 
             if (shells[i].y > 160 * 8) {
@@ -397,6 +400,7 @@ void newGameRun() {
     initShells();
     initEnergyBar();
     updatePlayerStatsAndReset();
+    initHazards();
 
     DMANow(3, shadowOAM, OAM, 512);
 }

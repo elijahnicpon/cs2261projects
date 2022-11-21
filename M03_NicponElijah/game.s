@@ -432,29 +432,29 @@ updateAndDrawShells:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	ldr	r3, .L80
+	ldr	r3, .L81
 	ldr	r3, [r3]
 	push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
 	add	r3, r3, r3, lsl #4
-	ldr	r2, .L80+4
+	ldr	r2, .L81+4
 	add	r3, r3, r3, lsl #8
-	ldr	r1, .L80+8
+	ldr	r1, .L81+8
 	add	r3, r3, r3, lsl #16
 	sub	r2, r2, r3
 	cmp	r1, r2, ror #3
 	sub	sp, sp, #20
 	bcs	.L79
 .L66:
-	ldr	r8, .L80+12
+	ldr	r8, .L81+12
 	ldr	r3, [r8]
 	cmp	r3, #0
 	ble	.L65
 	mov	r5, #0
-	ldr	r4, .L80+16
-	ldr	r6, .L80+20
-	ldr	r7, .L80+24
-	ldr	r9, .L80+28
-	ldr	r10, .L80+32
+	ldr	r4, .L81+16
+	ldr	r6, .L81+20
+	ldr	r7, .L81+24
+	ldr	r9, .L81+28
+	ldr	r10, .L81+32
 	b	.L72
 .L71:
 	ldr	r3, [r8]
@@ -494,7 +494,7 @@ updateAndDrawShells:
 	str	r3, [sp, #12]
 	ldr	r3, [r7, #24]
 	str	r2, [sp]
-	ldr	r2, .L80+36
+	ldr	r2, .L81+36
 	str	r3, [sp, #8]
 	ldr	r3, [r7, #8]
 	add	ip, r6, ip, lsl #3
@@ -509,13 +509,7 @@ updateAndDrawShells:
 	mov	lr, pc
 	bx	r9
 	cmp	r0, #0
-	beq	.L69
-	mov	r2, #0
-	ldr	r1, [r10]
-	ldr	r3, [r4, #4]
-	add	r3, r3, r1
-	str	r3, [r10]
-	str	r2, [r4, #28]
+	bne	.L80
 .L69:
 	ldr	r3, [r4, #8]
 	cmp	r3, #1280
@@ -529,12 +523,27 @@ updateAndDrawShells:
 	@ sp needed
 	pop	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
 	bx	lr
+.L80:
+	mov	r2, #0
+	ldr	r1, .L81+40
+	ldr	r0, [r10]
+	ldr	r3, [r4, #4]
+	ldr	r1, [r1]
+	add	r3, r3, r0
+	str	r3, [r10]
+	ldr	r0, .L81+44
+	str	r2, [r4, #28]
+	ldr	r3, .L81+48
+	sub	r1, r1, #500
+	mov	lr, pc
+	bx	r3
+	b	.L69
 .L79:
 	bl	newShell
 	b	.L66
-.L81:
+.L82:
 	.align	2
-.L80:
+.L81:
 	.word	time
 	.word	143165576
 	.word	35791394
@@ -545,6 +554,9 @@ updateAndDrawShells:
 	.word	collision
 	.word	shells_owned
 	.word	511
+	.word	coin_length
+	.word	coin_data
+	.word	playSoundB
 	.size	updateAndDrawShells, .-updateAndDrawShells
 	.align	2
 	.global	powpow
@@ -561,10 +573,10 @@ powpow:
 	mov	r3, r0
 	mov	r0, #1
 	bxeq	lr
-.L84:
+.L85:
 	subs	r1, r1, #1
 	mul	r0, r3, r0
-	bne	.L84
+	bne	.L85
 	bx	lr
 	.size	powpow, .-powpow
 	.global	__aeabi_idivmod
@@ -579,27 +591,27 @@ updateAndDrawPlayer:
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
 	push	{r4, r5, r6, lr}
-	ldr	r4, .L91
-	ldr	r2, .L91+4
+	ldr	r4, .L92
+	ldr	r2, .L92+4
 	ldr	r3, [r4, #40]
 	ldr	r1, [r2]
-	ldr	r2, .L91+8
+	ldr	r2, .L92+8
 	sub	r3, r3, #1
 	ldr	r0, [r2]
-	ldr	r5, .L91+12
+	ldr	r5, .L92+12
 	str	r3, [r4, #40]
 	rsb	r1, r1, #10
 	mov	lr, pc
 	bx	r5
 	cmp	r1, #0
 	ldr	r1, [r4, #12]
-	bne	.L89
+	bne	.L90
 	add	r0, r1, #1
 	ldr	r1, [r4, #16]
 	mov	lr, pc
 	bx	r5
 	str	r1, [r4, #12]
-.L89:
+.L90:
 	ldrb	r3, [r4, #8]	@ zero_extendqisi2
 	mvn	r3, r3, lsl #17
 	ldr	r2, [r4]
@@ -607,11 +619,11 @@ updateAndDrawPlayer:
 	cmp	r2, #0
 	movlt	r2, r0
 	mvn	r3, r3, lsr #17
-	ldr	r0, .L91+16
+	ldr	r0, .L92+16
 	add	r1, r0, r1, lsl #2
 	ldr	ip, [r4, #28]
-	ldr	lr, .L91+20
-	ldr	r4, .L91+24
+	ldr	lr, .L92+20
+	ldr	r4, .L92+24
 	ldr	r1, [r1, #4]
 	add	r0, r4, ip, lsl #3
 	and	r2, lr, r2, asr #3
@@ -622,9 +634,9 @@ updateAndDrawPlayer:
 	strh	r1, [r0, #4]	@ movhi
 	pop	{r4, r5, r6, lr}
 	bx	lr
-.L92:
+.L93:
 	.align	2
-.L91:
+.L92:
 	.word	player
 	.word	gameSpeed
 	.word	time
@@ -643,21 +655,21 @@ checkButtons:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	ldr	r3, .L102
+	ldr	r3, .L103
 	ldrh	r3, [r3]
 	tst	r3, #8
 	push	{r4, lr}
-	beq	.L94
-	ldr	r3, .L102+4
+	beq	.L95
+	ldr	r3, .L103+4
 	ldrh	r3, [r3]
 	tst	r3, #8
-	beq	.L101
-.L94:
-	ldr	r3, .L102+8
+	beq	.L102
+.L95:
+	ldr	r3, .L103+8
 	ldrh	r3, [r3, #48]
 	tst	r3, #32
-	bne	.L95
-	ldr	r3, .L102+12
+	bne	.L96
+	ldr	r3, .L103+12
 	ldr	r2, [r3, #36]
 	cmp	r2, #0
 	add	r1, r2, #7
@@ -669,12 +681,12 @@ checkButtons:
 	subpl	r1, r1, #1
 	strpl	r2, [r3]
 	strpl	r1, [r3, #40]
-.L95:
-	ldr	r3, .L102+8
+.L96:
+	ldr	r3, .L103+8
 	ldrh	r3, [r3, #48]
 	tst	r3, #16
-	bne	.L93
-	ldr	r2, .L102+12
+	bne	.L94
+	ldr	r2, .L103+12
 	ldr	r1, [r2, #36]
 	cmp	r1, #0
 	add	r3, r1, #7
@@ -689,17 +701,17 @@ checkButtons:
 	suble	r3, r3, #1
 	strle	r1, [r2]
 	strle	r3, [r2, #40]
-.L93:
+.L94:
 	pop	{r4, lr}
 	bx	lr
-.L101:
-	ldr	r3, .L102+16
+.L102:
+	ldr	r3, .L103+16
 	mov	lr, pc
 	bx	r3
-	b	.L94
-.L103:
+	b	.L95
+.L104:
 	.align	2
-.L102:
+.L103:
 	.word	oldButtons
 	.word	buttons
 	.word	67109120
@@ -716,15 +728,15 @@ doGame:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	ldr	r2, .L107
+	ldr	r2, .L108
 	ldr	r3, [r2]
 	push	{r4, lr}
 	add	r3, r3, #1
-	ldr	r1, .L107+4
+	ldr	r1, .L108+4
 	str	r3, [r2]
 	mov	lr, pc
 	bx	r1
-	ldr	ip, .L107+8
+	ldr	ip, .L108+8
 	ldr	r3, [ip]
 	sub	r0, r3, #1
 	cmp	r0, #0
@@ -734,7 +746,7 @@ doGame:
 	asr	r3, r3, #3
 	str	r0, [ip]
 	lsl	r3, r3, #16
-	ldr	ip, .L107+12
+	ldr	ip, .L108+12
 	lsr	r3, r3, #16
 	strh	r3, [r2, #18]	@ movhi
 	sub	r1, r3, #10
@@ -758,32 +770,32 @@ doGame:
 	bl	updateAndDrawPlayer
 	bl	updateAndDrawShells
 	bl	updateAndDrawHUD
-	ldr	r3, .L107+16
+	ldr	r3, .L108+16
 	mov	lr, pc
 	bx	r3
-	ldr	r3, .L107+20
+	ldr	r3, .L108+20
 	mov	lr, pc
 	bx	r3
-	ldr	r3, .L107+24
+	ldr	r3, .L108+24
 	ldr	r3, [r3, #40]
 	cmp	r3, #0
-	ldrle	r3, .L107+28
+	ldrle	r3, .L108+28
 	movle	lr, pc
 	bxle	r3
-.L105:
+.L106:
 	bl	checkButtons
-	ldr	r4, .L107+32
+	ldr	r4, .L108+32
 	mov	r3, #512
 	mov	r2, #117440512
 	mov	r0, #3
-	ldr	r1, .L107+36
+	ldr	r1, .L108+36
 	mov	lr, pc
 	bx	r4
 	pop	{r4, lr}
 	bx	lr
-.L108:
+.L109:
 	.align	2
-.L107:
+.L108:
 	.word	time
 	.word	waitForVBlank
 	.word	cloudVOff
@@ -806,7 +818,7 @@ updateBackgrounds:
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
 	@ link register save eliminated.
-	ldr	ip, .L110
+	ldr	ip, .L111
 	ldr	r3, [ip]
 	sub	r0, r3, #1
 	cmp	r0, #0
@@ -816,7 +828,7 @@ updateBackgrounds:
 	asr	r3, r3, #3
 	str	r0, [ip]
 	lsl	r3, r3, #16
-	ldr	ip, .L110+4
+	ldr	ip, .L111+4
 	lsr	r3, r3, #16
 	strh	r3, [r2, #18]	@ movhi
 	sub	r1, r3, #10
@@ -838,9 +850,9 @@ updateBackgrounds:
 	strh	r1, [r2, #16]	@ movhi
 	strh	r1, [r2, #24]	@ movhi
 	bx	lr
-.L111:
+.L112:
 	.align	2
-.L110:
+.L111:
 	.word	cloudVOff
 	.word	vOff
 	.size	updateBackgrounds, .-updateBackgrounds
@@ -855,74 +867,74 @@ resumeGame:
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
 	push	{r4, r5, r6, lr}
-	ldr	r3, .L116
+	ldr	r3, .L117
 	mov	lr, pc
 	bx	r3
 	mov	r5, #67108864
 	mov	r0, #4
 	mov	r2, #5888
-	ldr	r3, .L116+4
-	ldr	r1, .L116+8
-	ldr	r4, .L116+12
+	ldr	r3, .L117+4
+	ldr	r1, .L117+8
+	ldr	r4, .L117+12
 	str	r0, [r3]
 	strh	r2, [r5]	@ movhi
 	mov	r3, #256
 	strh	r1, [r5, #10]	@ movhi
 	mov	r2, #83886080
 	mov	r0, #3
-	ldr	r1, .L116+16
+	ldr	r1, .L117+16
 	mov	lr, pc
 	bx	r4
 	mov	r3, #176
 	mov	r2, #100663296
 	mov	r0, #3
-	ldr	r1, .L116+20
+	ldr	r1, .L117+20
 	mov	lr, pc
 	bx	r4
 	mov	r3, #1024
 	mov	r0, #3
-	ldr	r2, .L116+24
-	ldr	r1, .L116+28
+	ldr	r2, .L117+24
+	ldr	r1, .L117+28
 	mov	lr, pc
 	bx	r4
-	ldr	r2, .L116+32
+	ldr	r2, .L117+32
 	mov	r3, #816
 	strh	r2, [r5, #8]	@ movhi
 	mov	r0, #3
-	ldr	r2, .L116+36
-	ldr	r1, .L116+40
+	ldr	r2, .L117+36
+	ldr	r1, .L117+40
 	mov	lr, pc
 	bx	r4
 	mov	r3, #1024
 	mov	r0, #3
-	ldr	r2, .L116+44
-	ldr	r1, .L116+48
+	ldr	r2, .L117+44
+	ldr	r1, .L117+48
 	mov	lr, pc
 	bx	r4
-	ldr	r2, .L116+52
+	ldr	r2, .L117+52
 	mov	r3, #1024
 	strh	r2, [r5, #12]	@ movhi
 	mov	r0, #3
-	ldr	r2, .L116+56
-	ldr	r1, .L116+60
+	ldr	r2, .L117+56
+	ldr	r1, .L117+60
 	mov	lr, pc
 	bx	r4
 	mov	r3, #1024
 	mov	r0, #3
-	ldr	r2, .L116+64
-	ldr	r1, .L116+68
+	ldr	r2, .L117+64
+	ldr	r1, .L117+68
 	mov	lr, pc
 	bx	r4
 	mov	r3, #256
 	mov	r0, #3
-	ldr	r2, .L116+72
-	ldr	r1, .L116+76
+	ldr	r2, .L117+72
+	ldr	r1, .L117+76
 	mov	lr, pc
 	bx	r4
 	mov	r3, #16384
 	mov	r0, #3
-	ldr	r2, .L116+80
-	ldr	r1, .L116+84
+	ldr	r2, .L117+80
+	ldr	r1, .L117+84
 	mov	lr, pc
 	bx	r4
 	mov	lr, #132
@@ -930,10 +942,10 @@ resumeGame:
 	mov	r3, #9
 	mov	ip, #2
 	mov	r0, #136
-	ldr	r1, .L116+88
-	ldr	r5, .L116+92
+	ldr	r1, .L117+88
+	ldr	r5, .L117+92
 	strh	lr, [r1, #12]	@ movhi
-	ldr	lr, .L116+96
+	ldr	lr, .L117+96
 	strh	r5, [r1, #2]	@ movhi
 	add	r5, r5, #32
 	mov	r2, r1
@@ -942,7 +954,7 @@ resumeGame:
 	strh	lr, [r1]	@ movhi
 	strh	lr, [r1, #8]	@ movhi
 	add	r1, r1, #224
-.L113:
+.L114:
 	strh	r3, [r2, #242]	@ movhi
 	strh	ip, [r2, #240]	@ movhi
 	strh	r0, [r2, #244]	@ movhi
@@ -951,18 +963,18 @@ resumeGame:
 	lsl	r3, r3, #16
 	cmp	r2, r1
 	lsr	r3, r3, #16
-	bne	.L113
+	bne	.L114
 	mov	r3, #512
 	mov	r2, #117440512
 	mov	r0, #3
-	ldr	r1, .L116+88
+	ldr	r1, .L117+88
 	mov	lr, pc
 	bx	r4
 	pop	{r4, r5, r6, lr}
 	bx	lr
-.L117:
+.L118:
 	.align	2
-.L116:
+.L117:
 	.word	hideSprites
 	.word	state
 	.word	7938
@@ -1000,7 +1012,7 @@ updatePlayerStatsAndReset:
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
 	@ link register save eliminated.
-	ldr	r1, .L119
+	ldr	r1, .L120
 	add	r0, r1, #52
 	ldm	r0, {r0, r3}
 	ldr	r2, [r1, #24]
@@ -1021,9 +1033,9 @@ updatePlayerStatsAndReset:
 	str	r3, [r1, #40]
 	str	r3, [r1, #44]
 	bx	lr
-.L120:
+.L121:
 	.align	2
-.L119:
+.L120:
 	.word	player
 	.size	updatePlayerStatsAndReset, .-updatePlayerStatsAndReset
 	.align	2
@@ -1037,99 +1049,99 @@ newGameRun:
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
 	push	{r4, r5, r6, lr}
-	ldr	r3, .L128
+	ldr	r3, .L129
 	mov	lr, pc
 	bx	r3
 	mov	r6, #67108864
 	mov	r2, #5888
 	mov	r4, #4
-	ldr	r3, .L128+4
-	ldr	r1, .L128+8
-	ldr	r5, .L128+12
+	ldr	r3, .L129+4
+	ldr	r1, .L129+8
+	ldr	r5, .L129+12
 	str	r4, [r3]
 	mov	r0, #3
 	strh	r2, [r6]	@ movhi
 	mov	r3, #256
 	mov	r2, #83886080
 	strh	r1, [r6, #10]	@ movhi
-	ldr	r1, .L128+16
+	ldr	r1, .L129+16
 	mov	lr, pc
 	bx	r5
 	mov	r3, #176
 	mov	r2, #100663296
 	mov	r0, #3
-	ldr	r1, .L128+20
+	ldr	r1, .L129+20
 	mov	lr, pc
 	bx	r5
 	mov	r3, #1024
 	mov	r0, #3
-	ldr	r2, .L128+24
-	ldr	r1, .L128+28
+	ldr	r2, .L129+24
+	ldr	r1, .L129+28
 	mov	lr, pc
 	bx	r5
-	ldr	r2, .L128+32
+	ldr	r2, .L129+32
 	mov	r3, #816
 	mov	r0, #3
 	strh	r2, [r6, #8]	@ movhi
-	ldr	r1, .L128+36
-	ldr	r2, .L128+40
+	ldr	r1, .L129+36
+	ldr	r2, .L129+40
 	mov	lr, pc
 	bx	r5
 	mov	r3, #1024
 	mov	r0, #3
-	ldr	r2, .L128+44
-	ldr	r1, .L128+48
+	ldr	r2, .L129+44
+	ldr	r1, .L129+48
 	mov	lr, pc
 	bx	r5
-	ldr	r2, .L128+52
+	ldr	r2, .L129+52
 	mov	r3, #1024
 	mov	r0, #3
 	strh	r2, [r6, #12]	@ movhi
-	ldr	r1, .L128+56
-	ldr	r2, .L128+60
+	ldr	r1, .L129+56
+	ldr	r2, .L129+60
 	mov	lr, pc
 	bx	r5
 	mov	r3, #1024
 	mov	r0, #3
-	ldr	r2, .L128+64
-	ldr	r1, .L128+68
+	ldr	r2, .L129+64
+	ldr	r1, .L129+68
 	mov	lr, pc
 	bx	r5
 	mov	r3, #256
 	mov	r0, #3
-	ldr	r2, .L128+72
-	ldr	r1, .L128+76
+	ldr	r2, .L129+72
+	ldr	r1, .L129+76
 	mov	lr, pc
 	bx	r5
 	mov	r3, #16384
 	mov	r0, #3
-	ldr	r2, .L128+80
-	ldr	r1, .L128+84
+	ldr	r2, .L129+80
+	ldr	r1, .L129+84
 	mov	lr, pc
 	bx	r5
 	mov	r2, #128
 	mov	r1, #132
-	ldr	r3, .L128+88
+	ldr	r3, .L129+88
 	ldr	r0, [r3]
-	ldr	r3, .L128+92
-	ldr	lr, .L128+96
-	ldr	ip, .L128+100
+	ldr	r3, .L129+92
+	ldr	lr, .L129+96
+	ldr	ip, .L129+100
 	strh	r2, [r3, #4]	@ movhi
-	ldr	r2, .L128+104
+	ldr	r2, .L129+104
 	cmp	r0, #0
 	strh	lr, [r3, #2]	@ movhi
 	strh	ip, [r3, #10]	@ movhi
 	strh	r1, [r3, #12]	@ movhi
 	strh	r2, [r3]	@ movhi
 	strh	r2, [r3, #8]	@ movhi
-	ble	.L122
+	ble	.L123
 	mov	r2, r4
 	mov	lr, #0
 	mov	ip, #10
 	mov	r1, #7
-	ldr	r3, .L128+108
+	ldr	r3, .L129+108
 	add	r0, r0, r4
-.L123:
+.L124:
 	str	r2, [r3, #24]
 	add	r2, r2, #1
 	cmp	r2, r0
@@ -1138,14 +1150,14 @@ newGameRun:
 	str	r1, [r3, #16]
 	str	r1, [r3, #20]
 	add	r3, r3, #40
-	bne	.L123
-.L122:
+	bne	.L124
+.L123:
 	mov	r3, #9
 	mov	ip, #2
 	mov	r0, #136
-	ldr	r2, .L128+92
+	ldr	r2, .L129+92
 	add	r1, r2, #224
-.L124:
+.L125:
 	strh	r3, [r2, #242]	@ movhi
 	strh	ip, [r2, #240]	@ movhi
 	strh	r0, [r2, #244]	@ movhi
@@ -1154,19 +1166,22 @@ newGameRun:
 	lsl	r3, r3, #16
 	cmp	r2, r1
 	lsr	r3, r3, #16
-	bne	.L124
+	bne	.L125
 	bl	updatePlayerStatsAndReset
+	ldr	r3, .L129+112
+	mov	lr, pc
+	bx	r3
 	mov	r3, #512
 	mov	r2, #117440512
 	mov	r0, #3
-	ldr	r1, .L128+92
+	ldr	r1, .L129+92
 	mov	lr, pc
 	bx	r5
 	pop	{r4, r5, r6, lr}
 	bx	lr
-.L129:
+.L130:
 	.align	2
-.L128:
+.L129:
 	.word	hideSprites
 	.word	state
 	.word	7938
@@ -1195,6 +1210,7 @@ newGameRun:
 	.word	-32734
 	.word	16386
 	.word	.LANCHOR1
+	.word	initHazards
 	.size	newGameRun, .-newGameRun
 	.align	2
 	.global	goGame
@@ -1207,93 +1223,93 @@ goGame:
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
 	push	{r3, r4, r5, r6, r7, r8, r9, r10, fp, lr}
-	ldr	r3, .L137
+	ldr	r3, .L138
 	mov	lr, pc
 	bx	r3
-	ldr	r3, .L137+4
+	ldr	r3, .L138+4
 	mov	lr, pc
 	bx	r3
 	mov	r6, #67108864
 	mov	r2, #5888
 	mov	r4, #4
-	ldr	r3, .L137+8
-	ldr	r1, .L137+12
-	ldr	r5, .L137+16
+	ldr	r3, .L138+8
+	ldr	r1, .L138+12
+	ldr	r5, .L138+16
 	str	r4, [r3]
 	mov	r0, #3
 	strh	r2, [r6]	@ movhi
 	mov	r3, #256
 	strh	r1, [r6, #10]	@ movhi
 	mov	r2, #83886080
-	ldr	r1, .L137+20
+	ldr	r1, .L138+20
 	mov	lr, pc
 	bx	r5
 	mov	r3, #176
 	mov	r2, #100663296
 	mov	r0, #3
-	ldr	r1, .L137+24
+	ldr	r1, .L138+24
 	mov	lr, pc
 	bx	r5
 	mov	r3, #1024
 	mov	r0, #3
-	ldr	r2, .L137+28
-	ldr	r1, .L137+32
+	ldr	r2, .L138+28
+	ldr	r1, .L138+32
 	mov	lr, pc
 	bx	r5
-	ldr	r2, .L137+36
+	ldr	r2, .L138+36
 	mov	r3, #816
 	strh	r2, [r6, #8]	@ movhi
 	mov	r0, #3
-	ldr	r2, .L137+40
-	ldr	r1, .L137+44
+	ldr	r2, .L138+40
+	ldr	r1, .L138+44
 	mov	lr, pc
 	bx	r5
 	mov	r10, #128
 	mov	r3, #1024
 	mov	r0, #3
-	ldr	r2, .L137+48
-	ldr	r1, .L137+52
+	ldr	r2, .L138+48
+	ldr	r1, .L138+52
 	mov	lr, pc
 	bx	r5
-	ldr	r2, .L137+56
+	ldr	r2, .L138+56
 	mov	r3, #1024
 	strh	r2, [r6, #12]	@ movhi
 	mov	r0, #3
-	ldr	r2, .L137+60
-	ldr	r1, .L137+64
+	ldr	r2, .L138+60
+	ldr	r1, .L138+64
 	mov	lr, pc
 	bx	r5
 	mov	r3, #1024
 	mov	r0, #3
-	ldr	r2, .L137+68
-	ldr	r1, .L137+72
+	ldr	r2, .L138+68
+	ldr	r1, .L138+72
 	mov	lr, pc
 	bx	r5
 	mov	fp, #132
 	mov	r3, #256
 	mov	r0, #3
-	ldr	r2, .L137+76
-	ldr	r1, .L137+80
+	ldr	r2, .L138+76
+	ldr	r1, .L138+80
 	mov	lr, pc
 	bx	r5
 	mov	r3, #16384
 	mov	r0, #3
-	ldr	r2, .L137+84
-	ldr	r1, .L137+88
+	ldr	r2, .L138+84
+	ldr	r1, .L138+88
 	mov	lr, pc
 	bx	r5
 	mov	r0, #3
-	ldr	r1, .L137+92
+	ldr	r1, .L138+92
 	strh	r10, [r1, #4]	@ movhi
-	ldr	r10, .L137+96
+	ldr	r10, .L138+96
 	strh	r10, [r1, #2]	@ movhi
 	add	r10, r10, #32
 	strh	r10, [r1, #10]	@ movhi
-	ldr	r10, .L137+100
+	ldr	r10, .L138+100
 	strh	fp, [r1, #12]	@ movhi
 	strh	r10, [r1]	@ movhi
 	strh	r10, [r1, #8]	@ movhi
-	ldr	r1, .L137+104
+	ldr	r1, .L138+104
 	mov	r3, #0
 	mov	ip, #8
 	mov	r9, #9
@@ -1303,7 +1319,7 @@ goGame:
 	mov	lr, #16
 	str	r0, [r1, #28]
 	mov	r0, #2
-	ldr	r2, .L137+108
+	ldr	r2, .L138+108
 	ldr	r2, [r2]
 	str	ip, [r1, #16]
 	cmp	r2, r3
@@ -1321,12 +1337,12 @@ goGame:
 	str	r3, [r1, #32]
 	str	ip, [r1, #40]
 	str	ip, [r1, #44]
-	ble	.L131
+	ble	.L132
 	mov	ip, #10
 	mov	r0, #7
-	ldr	r1, .L137+112
+	ldr	r1, .L138+112
 	add	r2, r2, r4
-.L132:
+.L133:
 	str	r4, [r1, #24]
 	add	r4, r4, #1
 	cmp	r4, r2
@@ -1335,14 +1351,14 @@ goGame:
 	str	r0, [r1, #16]
 	str	r0, [r1, #20]
 	add	r1, r1, #40
-	bne	.L132
-.L131:
+	bne	.L133
+.L132:
 	mov	r3, #9
 	mov	ip, #2
 	mov	r0, #136
-	ldr	r2, .L137+92
+	ldr	r2, .L138+92
 	add	r1, r2, #224
-.L133:
+.L134:
 	strh	r3, [r2, #242]	@ movhi
 	strh	ip, [r2, #240]	@ movhi
 	strh	r0, [r2, #244]	@ movhi
@@ -1351,24 +1367,24 @@ goGame:
 	lsl	r3, r3, #16
 	cmp	r2, r1
 	lsr	r3, r3, #16
-	bne	.L133
-	ldr	r3, .L137+116
+	bne	.L134
+	ldr	r3, .L138+116
 	mov	lr, pc
 	bx	r3
 	mov	ip, #0
-	ldr	r0, .L137+120
+	ldr	r0, .L138+120
 	mov	r3, #512
 	str	ip, [r0]
 	mov	r2, #117440512
 	mov	r0, #3
-	ldr	r1, .L137+92
+	ldr	r1, .L138+92
 	mov	lr, pc
 	bx	r5
 	pop	{r3, r4, r5, r6, r7, r8, r9, r10, fp, lr}
 	bx	lr
-.L138:
+.L139:
 	.align	2
-.L137:
+.L138:
 	.word	srand
 	.word	hideSprites
 	.word	state
@@ -1421,9 +1437,9 @@ initPlayer:
 	mov	lr, #8
 	mov	ip, #3
 	mov	r0, #2
-	ldr	r3, .L141
+	ldr	r3, .L142
 	str	r1, [r3, #20]
-	ldr	r1, .L141+4
+	ldr	r1, .L142+4
 	str	r7, [r3, #24]
 	str	r6, [r3]
 	str	r5, [r3, #4]
@@ -1440,9 +1456,9 @@ initPlayer:
 	str	r1, [r3, #44]
 	pop	{r4, r5, r6, r7, lr}
 	bx	lr
-.L142:
+.L143:
 	.align	2
-.L141:
+.L142:
 	.word	player
 	.word	1800
 	.size	initPlayer, .-initPlayer
@@ -1457,6 +1473,8 @@ initPlayer:
 	.comm	time,4,4
 	.comm	shells_owned,4,4
 	.comm	state,4,4
+	.comm	soundB,32,4
+	.comm	soundA,32,4
 	.data
 	.align	2
 	.set	.LANCHOR0,. + 0

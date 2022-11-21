@@ -41,6 +41,32 @@ void goUpgradeMenu();
 void goDeathPlastic();
 void doDeathPlastic();
 # 9 "states.h" 2
+# 1 "sound.h" 1
+
+
+
+void setupSounds();
+void playSoundA(const signed char* sound, int length, int loops);
+void playSoundB(const signed char* sound, int length, int loops);
+
+void pauseSounds();
+void unpauseSounds();
+void stopSounds();
+# 49 "sound.h"
+typedef struct{
+    const signed char* data;
+    int length;
+    int frequency;
+    int isPlaying;
+    int looping;
+    int duration;
+    int priority;
+    int vBlankCount;
+} SOUND;
+
+SOUND soundA;
+SOUND soundB;
+# 10 "states.h" 2
 
 
 enum STATE {START_MENU, INFO_MENU, CONTROLS_MENU, ABOUT_MENU, GAME, PAUSE, UPGRADE_MENU, END_ANIMATION, END_MENU, DEATH_ENERGY, DEATH_PLASTIC, DEATH_OIL, DAETH_BOAT, DEATH_SHARK, DEATH_CYANIDE, DEATH_BLAST};
@@ -166,7 +192,15 @@ typedef struct {
     int numFrames;
     int hide;
 } ANISPRITE;
-# 311 "gba.h"
+# 305 "gba.h"
+void setupInterrupts();
+
+
+
+
+
+
+
 typedef void (*ihp)(void);
 # 4 "start_menu.c" 2
 
@@ -187,6 +221,14 @@ extern const unsigned short start_menus_ssTiles[16384];
 
 extern const unsigned short start_menus_ssPal[256];
 # 7 "start_menu.c" 2
+
+# 1 "town_w_ocean_view.h" 1
+
+
+extern const unsigned int town_w_ocean_view_sampleRate;
+extern const unsigned int town_w_ocean_view_length;
+extern const signed char town_w_ocean_view_data[];
+# 9 "start_menu.c" 2
 
 int state, hOff, vOff, time;
 OBJ_ATTR shadowOAM[128];
@@ -246,4 +288,6 @@ void goStartMenu() {
     shadowOAM[3].attr2 = ((20) * (32) + (8));
 
     DMANow(3, shadowOAM, ((OBJ_ATTR*)(0x7000000)), 512);
+
+    playSoundA(town_w_ocean_view_data, town_w_ocean_view_length - 500, 1);
 }

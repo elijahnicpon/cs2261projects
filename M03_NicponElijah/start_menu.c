@@ -5,6 +5,8 @@
 #include "coral_bg.h"
 #include "start_menus_ss.h"
 
+#include "town_w_ocean_view.h"
+
 int state, hOff, vOff, time;
 OBJ_ATTR shadowOAM[128];
 
@@ -63,4 +65,6 @@ void goStartMenu() {
     shadowOAM[3].attr2 = OFFSET(8,20,32);
 
     DMANow(3, shadowOAM, OAM, 512);
+
+    playSoundA(town_w_ocean_view_data, town_w_ocean_view_length - 500, 1);
 }

@@ -43,6 +43,32 @@ void goUpgradeMenu();
 void goDeathPlastic();
 void doDeathPlastic();
 # 9 "states.h" 2
+# 1 "sound.h" 1
+
+
+
+void setupSounds();
+void playSoundA(const signed char* sound, int length, int loops);
+void playSoundB(const signed char* sound, int length, int loops);
+
+void pauseSounds();
+void unpauseSounds();
+void stopSounds();
+# 49 "sound.h"
+typedef struct{
+    const signed char* data;
+    int length;
+    int frequency;
+    int isPlaying;
+    int looping;
+    int duration;
+    int priority;
+    int vBlankCount;
+} SOUND;
+
+SOUND soundA;
+SOUND soundB;
+# 10 "states.h" 2
 
 
 enum STATE {START_MENU, INFO_MENU, CONTROLS_MENU, ABOUT_MENU, GAME, PAUSE, UPGRADE_MENU, END_ANIMATION, END_MENU, DEATH_ENERGY, DEATH_PLASTIC, DEATH_OIL, DAETH_BOAT, DEATH_SHARK, DEATH_CYANIDE, DEATH_BLAST};
@@ -168,7 +194,15 @@ typedef struct {
     int numFrames;
     int hide;
 } ANISPRITE;
-# 311 "gba.h"
+# 305 "gba.h"
+void setupInterrupts();
+
+
+
+
+
+
+
 typedef void (*ihp)(void);
 # 4 "game.c" 2
 
@@ -209,6 +243,14 @@ extern const unsigned short game_clouds_SHADOW_bgMap[1024];
 
 extern const unsigned short game_clouds_SHADOW_bgPal[256];
 # 9 "game.c" 2
+
+# 1 "coin.h" 1
+
+
+extern const unsigned int coin_sampleRate;
+extern const unsigned int coin_length;
+extern const signed char coin_data[];
+# 11 "game.c" 2
 
 # 1 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdlib.h" 1 3
 # 10 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdlib.h" 3
@@ -1018,7 +1060,7 @@ extern long double _strtold_r (struct _reent *, const char *restrict, char **res
 extern long double strtold (const char *restrict, char **restrict);
 # 336 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdlib.h" 3
 
-# 11 "game.c" 2
+# 13 "game.c" 2
 # 1 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdio.h" 1 3
 # 36 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdio.h" 3
 # 1 "/opt/devkitpro/devkitARM/lib/gcc/arm-none-eabi/9.1.0/include/stddef.h" 1 3 4
@@ -1429,10 +1471,10 @@ _putchar_unlocked(int _c)
 }
 # 797 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdio.h" 3
 
-# 12 "game.c" 2
+# 14 "game.c" 2
 
 
-# 13 "game.c"
+# 15 "game.c"
 int state, vOff, cloudVOff, gameSpeed, time, shells_owned;
 OBJ_ATTR shadowOAM[128];
 
@@ -1446,7 +1488,7 @@ void updateAndDrawShells();
 int checkNoEnergy();
 int powpow(int a, int b);
 int min(int a, int b);
-# 51 "game.c"
+# 53 "game.c"
 Player player;
 int playerFrames[8] = {0, 2, 4, 6, 8, 6, 4, 2};
 
@@ -1554,6 +1596,7 @@ void updateAndDrawShells() {
                 shells[i].active = 0;
                 shells_owned += shells[i].value;
 
+                playSoundB(coin_data, coin_length - 500, 0);
             }
 
             if (shells[i].y > 160 * 8) {
@@ -1671,7 +1714,7 @@ void updateBackgrounds() {
 }
 
 void resumeGame() {
-# 294 "game.c"
+# 297 "game.c"
     hideSprites();
 
     state = GAME;
@@ -1717,7 +1760,7 @@ void resumeGame() {
 }
 
 void newGameRun() {
-# 358 "game.c"
+# 361 "game.c"
     hideSprites();
 
     state = GAME;
@@ -1760,6 +1803,7 @@ void newGameRun() {
     initShells();
     initEnergyBar();
     updatePlayerStatsAndReset();
+    initHazards();
 
     DMANow(3, shadowOAM, ((OBJ_ATTR*)(0x7000000)), 512);
 }

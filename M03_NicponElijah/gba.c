@@ -2,7 +2,7 @@
 
 // The start of the video memory
 unsigned volatile short *videoBuffer = (unsigned short *)0x6000000;
-
+void interruptHandler();
 
 // ---- Miscellaneous Functions ----
 
@@ -130,4 +130,72 @@ void hideSprites() {
     for (int i = 0; i < 128; i++) {
         shadowOAM[i].attr0 = ATTR0_HIDE;
     }
+}
+
+#include "sound.h"
+// interupts // sound
+
+void setupInterrupts() {
+
+    // Disable interrupt master enable register
+    REG_IME = 0;
+
+    // Enable VBlank interrupts
+    REG_IE = INT_VBLANK;
+    //REG_DISPSTAT = INT_VBLANK_ENABLE; // 1<<3
+    REG_DISPSTAT = (1 << 3);
+    // TODO 5.3: Add bits for timer interrupts (timer 2 and timer 3)
+    REG_IE |= INT_TM2 | INT_TM3;
+
+    // Set interrupt handling function
+    REG_INTERRUPT = interruptHandler;
+    
+    // Re-enable interrupt master enable register
+    REG_IME = 1;
+
+}
+
+void interruptHandler() {
+
+    REG_IME = 0;
+
+    // If interrupt flag register identifies a VBlank interrupt
+    if (REG_IF & INT_VBLANK) {
+        //handle A
+        if (soundA.isPlaying) {
+            soundA.vBlankCount++;
+            if (soundA.vBlankCount > soundA.duration) {
+                if (soundA.looping) {
+                    playSoundA(soundA.data, soundA.length, soundA.looping);
+                } else {
+                    soundA.isPlaying = 0;
+                    REG_TM0CNT = TIMER_OFF;
+                    dma[1].cnt = 0;
+                }
+            }
+        }
+        //handleB
+        if (soundB.isPlaying) {
+            soundB.vBlankCount++;
+            if (soundB.vBlankCount > soundB.duration) {
+                if (soundB.looping) {
+                    playSoundB(soundB.data, soundB.length, soundB.looping);
+                } else {
+                    soundB.isPlaying = 0;
+                    REG_TM1CNT = TIMER_OFF;
+                    dma[2].cnt = 0;
+                }
+            }
+        }
+
+
+
+    }
+
+    // Notify GBA that the interrupt has been handled
+    REG_IF = REG_IF;
+
+	// Re-enable interrupt master enable register
+    REG_IME = 1;
+
 }

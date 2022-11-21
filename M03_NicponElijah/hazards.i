@@ -103,7 +103,15 @@ typedef struct {
     int numFrames;
     int hide;
 } ANISPRITE;
-# 311 "gba.h"
+# 305 "gba.h"
+void setupInterrupts();
+
+
+
+
+
+
+
 typedef void (*ihp)(void);
 # 3 "hazards.c" 2
 # 1 "game_ss.h" 1
@@ -148,6 +156,32 @@ void goUpgradeMenu();
 void goDeathPlastic();
 void doDeathPlastic();
 # 9 "states.h" 2
+# 1 "sound.h" 1
+
+
+
+void setupSounds();
+void playSoundA(const signed char* sound, int length, int loops);
+void playSoundB(const signed char* sound, int length, int loops);
+
+void pauseSounds();
+void unpauseSounds();
+void stopSounds();
+# 49 "sound.h"
+typedef struct{
+    const signed char* data;
+    int length;
+    int frequency;
+    int isPlaying;
+    int looping;
+    int duration;
+    int priority;
+    int vBlankCount;
+} SOUND;
+
+SOUND soundA;
+SOUND soundB;
+# 10 "states.h" 2
 
 
 enum STATE {START_MENU, INFO_MENU, CONTROLS_MENU, ABOUT_MENU, GAME, PAUSE, UPGRADE_MENU, END_ANIMATION, END_MENU, DEATH_ENERGY, DEATH_PLASTIC, DEATH_OIL, DAETH_BOAT, DEATH_SHARK, DEATH_CYANIDE, DEATH_BLAST};
@@ -1429,8 +1463,16 @@ extern long double strtold (const char *restrict, char **restrict);
 
 # 10 "hazards.c" 2
 
+# 1 "shield.h" 1
 
-# 11 "hazards.c"
+
+
+# 3 "shield.h"
+extern const unsigned int shield_sampleRate;
+extern const unsigned int shield_length;
+extern const signed char shield_data[];
+# 12 "hazards.c" 2
+
 int time, shieldTime;
 Player player;
 OBJ_ATTR shadowOAM[128];
@@ -1508,9 +1550,9 @@ void hazardFactory(int htype) {
                 case STRAW:
                     hazards[i].hazardType = STRAW;
                     hazards[i].active = 1;
-                    hazards[i].height = 12;
-                    hazards[i].width = 22;
-                    hazards[i].spriteIndex = ((19) * (32) + (0));
+                    hazards[i].height = 5;
+                    hazards[i].width = 15;
+                    hazards[i].spriteIndex = ((23) * (32) + (0));
                     hazards[i].size = 2;
 
 
@@ -1522,7 +1564,7 @@ void hazardFactory(int htype) {
                     hazards[i].y = -hazards[i].height * 8;
 
                     hazards[i].isTall = 0;
-                    hazards[i].isWide = 0;
+                    hazards[i].isWide = 1;
                     hazards[i].isAnimated = 0;
                     hazards[i].dx = 0;
                     hazards[i].dy = 1;
@@ -1543,7 +1585,7 @@ checkHazardSpawnLocation(int x, int width, int height) {
     mgba_printf("checkHazardSpawnLocation(%d, %d, %d) called", x, width, height);
     for (int i = 0; i < NUM_HAZARDS; i++) {
         if (hazards[i].active) {
-            if (hazards[i].y < 10) {
+            if (hazards[i].y < 20) {
                 if (collision(x / 8, -height, width, height, hazards[i].x / 8, hazards[i].y, hazards[i].width, hazards[i].height)) {
                     return 1;
                 }
@@ -1554,6 +1596,7 @@ checkHazardSpawnLocation(int x, int width, int height) {
 }
 
 void newShield() {
+    playSoundB(shield_data, shield_length - 500, 0);
     shieldTime = time + 60;
 }
 
@@ -1667,5 +1710,5 @@ void newHazard() {
     int randVal = rand() % 100;
 
     hazardFactory(BAG);
-# 327 "hazards.c"
+# 330 "hazards.c"
 }

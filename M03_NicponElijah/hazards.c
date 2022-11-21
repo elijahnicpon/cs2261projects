@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "shield.h"
+
 int time, shieldTime;
 Player player;
 OBJ_ATTR shadowOAM[128];
@@ -85,9 +87,9 @@ void hazardFactory(int htype) {
                 case STRAW:
                     hazards[i].hazardType = STRAW;
                     hazards[i].active = 1;
-                    hazards[i].height = 12;
-                    hazards[i].width = 22;
-                    hazards[i].spriteIndex = OFFSET(0,19,32);
+                    hazards[i].height = 5;
+                    hazards[i].width = 15;
+                    hazards[i].spriteIndex = OFFSET(0,23,32);
                     hazards[i].size = 2;
                     //TODO:
                     // hazards[i].deathfn = goDeathPlastic();
@@ -99,7 +101,7 @@ void hazardFactory(int htype) {
                     hazards[i].y = -hazards[i].height * 8;
                     // reset defaults
                     hazards[i].isTall = 0;
-                    hazards[i].isWide = 0;
+                    hazards[i].isWide = 1;
                     hazards[i].isAnimated = 0;
                     hazards[i].dx = 0;
                     hazards[i].dy = 1;
@@ -120,7 +122,7 @@ checkHazardSpawnLocation(int x, int width, int height) {
     mgba_printf("checkHazardSpawnLocation(%d, %d, %d) called", x, width, height);
     for (int i = 0; i < NUM_HAZARDS; i++) {
         if (hazards[i].active) {
-            if (hazards[i].y < 10) {
+            if (hazards[i].y < 20) {
                 if (collision(x / 8, -height, width, height, hazards[i].x / 8, hazards[i].y, hazards[i].width, hazards[i].height)) {
                     return 1;
                 }
@@ -131,6 +133,7 @@ checkHazardSpawnLocation(int x, int width, int height) {
 }
 
 void newShield() {
+    playSoundB(shield_data, shield_length - 500, 0);
     shieldTime = time + 60;
 }
 
@@ -161,7 +164,16 @@ void updateAndDrawHazards() { // MATCH UPDATE AND DRAW SHELLS
     for (int i = 0; i < NUM_HAZARDS; i++) {
         if (hazards[i].active) {
             //shadowOAM[hazards[i].oam_entry].attr0 = ((hazards[i].y / 8) & (0xFF)) | ATTR0_4BPP | (hazards[i].isTall == 0) ? 0 : ATTR0_TALL | (hazards[i].isWide == 0) ? 0 : ATTR0_WIDE;
-            shadowOAM[hazards[i].oam_entry].attr0 = (hazards[i].y / 8) & (0xFF) | ATTR0_4BPP;
+            //shadowOAM[hazards[i].oam_entry].attr0 = (hazards[i].y / 8) & (0xFF) | ATTR0_4BPP;
+            if (hazards[i].isTall) {
+                shadowOAM[hazards[i].oam_entry].attr0 = (hazards[i].y / 8) & (0xFF) | ATTR0_4BPP | ATTR0_TALL;
+            } else if (hazards[i].isWide) {
+                shadowOAM[hazards[i].oam_entry].attr0 = (hazards[i].y / 8) & (0xFF) | ATTR0_4BPP | ATTR0_WIDE;
+            } else {
+                shadowOAM[hazards[i].oam_entry].attr0 = (hazards[i].y / 8) & (0xFF) | ATTR0_4BPP;
+            }
+
+
             shadowOAM[hazards[i].oam_entry].attr1 = ((hazards[i].x / 8) & (0x1FF)) | (hazards[i].size << 14); 
             //shadowOAM[hazards[i].oam_entry].attr1 = ((hazards[i].x / 8) & (0x1FF)) | (hazards[i].size == 1) ? ATTR1_SMALL : 0 | (hazards[i].size == 2) ? ATTR1_MEDIUM : 0 | (hazards[i].size == 3) ? ATTR1_LARGE : 0;
             //shadowOAM[hazards[i].oam_entry].attr1 = ((hazards[i].x / 8) & (0x1FF));

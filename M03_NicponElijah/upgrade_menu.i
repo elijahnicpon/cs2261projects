@@ -41,6 +41,32 @@ void goUpgradeMenu();
 void goDeathPlastic();
 void doDeathPlastic();
 # 9 "states.h" 2
+# 1 "sound.h" 1
+
+
+
+void setupSounds();
+void playSoundA(const signed char* sound, int length, int loops);
+void playSoundB(const signed char* sound, int length, int loops);
+
+void pauseSounds();
+void unpauseSounds();
+void stopSounds();
+# 49 "sound.h"
+typedef struct{
+    const signed char* data;
+    int length;
+    int frequency;
+    int isPlaying;
+    int looping;
+    int duration;
+    int priority;
+    int vBlankCount;
+} SOUND;
+
+SOUND soundA;
+SOUND soundB;
+# 10 "states.h" 2
 
 
 enum STATE {START_MENU, INFO_MENU, CONTROLS_MENU, ABOUT_MENU, GAME, PAUSE, UPGRADE_MENU, END_ANIMATION, END_MENU, DEATH_ENERGY, DEATH_PLASTIC, DEATH_OIL, DAETH_BOAT, DEATH_SHARK, DEATH_CYANIDE, DEATH_BLAST};
@@ -166,7 +192,15 @@ typedef struct {
     int numFrames;
     int hide;
 } ANISPRITE;
-# 311 "gba.h"
+# 305 "gba.h"
+void setupInterrupts();
+
+
+
+
+
+
+
 typedef void (*ihp)(void);
 # 4 "upgrade_menu.c" 2
 
@@ -187,6 +221,21 @@ extern const unsigned short upgrade_menu_ssTiles[16384];
 
 extern const unsigned short upgrade_menu_ssPal[256];
 # 7 "upgrade_menu.c" 2
+
+# 1 "error.h" 1
+
+
+extern const unsigned int error_sampleRate;
+extern const unsigned int error_length;
+extern const signed char error_data[];
+# 9 "upgrade_menu.c" 2
+# 1 "success.h" 1
+
+
+extern const unsigned int success_sampleRate;
+extern const unsigned int success_length;
+extern const signed char success_data[];
+# 10 "upgrade_menu.c" 2
 
 int state, hOff, vOff, time;
 OBJ_ATTR shadowOAM[128];
@@ -245,9 +294,11 @@ void attemptUpgradeEnergy() {
         updateShield();
         DMANow(3, shadowOAM, ((OBJ_ATTR*)(0x7000000)), 512);
 
+        playSoundB(success_data, success_length - 500, 0);
 
     } else {
 
+        playSoundB(error_data, error_length - 500, 0);
     }
 }
 
@@ -261,9 +312,11 @@ void attemptUpgradeShield() {
         updateShield();
         DMANow(3, shadowOAM, ((OBJ_ATTR*)(0x7000000)), 512);
 
+        playSoundB(success_data, success_length - 500, 0);
 
     } else {
 
+        playSoundB(error_data, error_length - 500, 0);
     }
 }
 
@@ -335,9 +388,11 @@ void attemptUpgradeAgility() {
         updateShield();
         DMANow(3, shadowOAM, ((OBJ_ATTR*)(0x7000000)), 512);
 
+        playSoundB(success_data, success_length - 500, 0);
 
     } else {
 
+        playSoundB(error_data, error_length - 500, 0);
     }
 }
 
@@ -407,7 +462,7 @@ void goUpgradeMenu() {
 
     DMANow(3, upgrade_menu_ssPal, ((unsigned short *)0x5000200), 512/2);
     DMANow(3, upgrade_menu_ssTiles, &((charblock *)0x6000000)[4], 32768/2);
-# 329 "upgrade_menu.c"
+# 338 "upgrade_menu.c"
     shadowOAM[36].attr0 = (0 << 13) | (0 << 14) | (4 & 0xFF);
     shadowOAM[36].attr1 = (1 << 14) | (2 & 0x1FF);
     shadowOAM[36].attr2 = ((9) * (32) + (0));

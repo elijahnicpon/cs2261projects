@@ -97,13 +97,21 @@ typedef struct {
     int numFrames;
     int hide;
 } ANISPRITE;
-# 311 "gba.h"
+# 305 "gba.h"
+void setupInterrupts();
+
+
+
+
+
+
+
 typedef void (*ihp)(void);
 # 2 "gba.c" 2
 
 
 unsigned volatile short *videoBuffer = (unsigned short *)0x6000000;
-
+void interruptHandler();
 
 
 
@@ -231,4 +239,97 @@ void hideSprites() {
     for (int i = 0; i < 128; i++) {
         shadowOAM[i].attr0 = (2 << 8);
     }
+}
+
+# 1 "sound.h" 1
+
+
+
+void setupSounds();
+void playSoundA(const signed char* sound, int length, int loops);
+void playSoundB(const signed char* sound, int length, int loops);
+
+void pauseSounds();
+void unpauseSounds();
+void stopSounds();
+# 49 "sound.h"
+typedef struct{
+    const signed char* data;
+    int length;
+    int frequency;
+    int isPlaying;
+    int looping;
+    int duration;
+    int priority;
+    int vBlankCount;
+} SOUND;
+
+SOUND soundA;
+SOUND soundB;
+# 136 "gba.c" 2
+
+
+void setupInterrupts() {
+
+
+    *(unsigned short*)0x4000208 = 0;
+
+
+    *(unsigned short*)0x4000200 = 1 << 0;
+
+    *(unsigned short*)0x4000004 = (1 << 3);
+
+    *(unsigned short*)0x4000200 |= 1<<5 | 1<<6;
+
+
+    *((ihp*)0x03007FFC) = interruptHandler;
+
+
+    *(unsigned short*)0x4000208 = 1;
+
+}
+
+void interruptHandler() {
+
+    *(unsigned short*)0x4000208 = 0;
+
+
+    if (*(volatile unsigned short*)0x4000202 & 1 << 0) {
+
+        if (soundA.isPlaying) {
+            soundA.vBlankCount++;
+            if (soundA.vBlankCount > soundA.duration) {
+                if (soundA.looping) {
+                    playSoundA(soundA.data, soundA.length, soundA.looping);
+                } else {
+                    soundA.isPlaying = 0;
+                    *(volatile unsigned short*)0x4000102 = (0<<7);
+                    dma[1].cnt = 0;
+                }
+            }
+        }
+
+        if (soundB.isPlaying) {
+            soundB.vBlankCount++;
+            if (soundB.vBlankCount > soundB.duration) {
+                if (soundB.looping) {
+                    playSoundB(soundB.data, soundB.length, soundB.looping);
+                } else {
+                    soundB.isPlaying = 0;
+                    *(volatile unsigned short*)0x4000106 = (0<<7);
+                    dma[2].cnt = 0;
+                }
+            }
+        }
+
+
+
+    }
+
+
+    *(volatile unsigned short*)0x4000202 = *(volatile unsigned short*)0x4000202;
+
+
+    *(unsigned short*)0x4000208 = 1;
+
 }

@@ -302,6 +302,8 @@ typedef struct {
 
 // ---- Interrupts ----
 
+void setupInterrupts();
+
 // Interrupt Registers
 #define REG_IME *(unsigned short*)0x4000208 // Controller
 #define REG_IE *(unsigned short*)0x4000200 // Enabler

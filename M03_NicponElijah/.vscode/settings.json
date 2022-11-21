@@ -8,6 +8,7 @@
         "game.h": "c",
         "death_energy_ss.h": "c",
         "about_menu.h": "c",
-        "game_clouds_shadow_bg.h": "c"
+        "game_clouds_shadow_bg.h": "c",
+        "upgrade_menu_ss.h": "c"
     }
 }

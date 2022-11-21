@@ -62,7 +62,7 @@ checkHazardSpawnLocation:
 	add	r5, r5, #1
 	beq	.L5
 	ldr	r2, [r4, #4]
-	cmp	r2, #9
+	cmp	r2, #19
 	bgt	.L5
 	ldr	r3, [r4]
 	cmp	r3, #0
@@ -151,9 +151,9 @@ hazardFactory:
 	beq	.L16
 	cmp	r10, fp
 	bne	.L13
-	mov	r0, #12
-	mov	r1, #22
-	mov	r2, #608
+	mov	r0, #5
+	mov	r1, #15
+	mov	r2, #736
 	mov	r3, #2
 	str	r10, [r7, #36]
 	str	r10, [r7, #60]
@@ -231,10 +231,10 @@ hazardFactory:
 	str	r3, [r7, #4]
 	str	r9, [r7]
 	str	r0, [r7, #24]
-	str	r0, [r7, #28]
 	str	r0, [r7, #48]
 	str	r0, [r7, #8]
 	str	r2, [r4, #12]
+	str	r2, [r7, #28]
 	pop	{r3, r4, r5, r6, r7, r8, r9, r10, fp, lr}
 	bx	lr
 .L26:
@@ -255,16 +255,28 @@ newShield:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	@ link register save eliminated.
-	ldr	r3, .L28
+	ldr	r3, .L29
+	ldr	r1, [r3]
+	mov	r2, #0
+	push	{r4, lr}
+	ldr	r3, .L29+4
+	ldr	r0, .L29+8
+	sub	r1, r1, #500
+	mov	lr, pc
+	bx	r3
+	ldr	r3, .L29+12
 	ldr	r3, [r3]
-	ldr	r2, .L28+4
+	ldr	r2, .L29+16
 	add	r3, r3, #60
 	str	r3, [r2]
+	pop	{r4, lr}
 	bx	lr
-.L29:
+.L30:
 	.align	2
-.L28:
+.L29:
+	.word	shield_length
+	.word	playSoundB
+	.word	shield_data
 	.word	time
 	.word	shieldTime
 	.size	newShield, .-newShield
@@ -279,15 +291,15 @@ updateAndDrawShield:
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
 	@ link register save eliminated.
-	ldr	r3, .L36
-	ldr	r2, .L36+4
+	ldr	r3, .L37
+	ldr	r2, .L37+4
 	ldr	r3, [r3]
 	ldr	r2, [r2]
 	cmp	r2, r3
-	blt	.L31
+	blt	.L32
 	tst	r3, #1
-	beq	.L31
-	ldr	r2, .L36+8
+	beq	.L32
+	ldr	r2, .L37+8
 	ldr	r3, [r2]
 	add	r1, r3, #7
 	cmp	r3, #0
@@ -296,22 +308,22 @@ updateAndDrawShield:
 	sub	r3, r3, #2
 	lsl	r3, r3, #23
 	ldrb	r0, [r2, #8]	@ zero_extendqisi2
-	ldr	r1, .L36+12
-	ldr	r2, .L36+16
+	ldr	r1, .L37+12
+	ldr	r2, .L37+16
 	lsr	r3, r3, #23
 	orr	r3, r3, #16384
 	strh	r0, [r2, #88]	@ movhi
 	strh	r3, [r2, #90]	@ movhi
 	strh	r1, [r2, #92]	@ movhi
 	bx	lr
-.L31:
+.L32:
 	mov	r2, #512
-	ldr	r3, .L36+16
+	ldr	r3, .L37+16
 	strh	r2, [r3, #88]	@ movhi
 	bx	lr
-.L37:
+.L38:
 	.align	2
-.L36:
+.L37:
 	.word	time
 	.word	shieldTime
 	.word	player
@@ -328,66 +340,68 @@ updateAndDrawHazards:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
+	ldr	r3, .L56
+	ldr	r3, [r3]
 	push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
-	ldr	fp, .L55
-	ldr	r3, [fp]
 	add	r3, r3, r3, lsl #4
-	ldr	r2, .L55+4
+	ldr	r2, .L56+4
 	add	r3, r3, r3, lsl #8
-	ldr	r1, .L55+8
+	ldr	r1, .L56+8
 	add	r3, r3, r3, lsl #16
 	sub	r2, r2, r3
 	cmp	r1, r2, ror #2
 	sub	sp, sp, #20
-	bcs	.L54
-.L39:
-	ldr	r8, .L55+12
+	bcs	.L55
+.L40:
+	ldr	r8, .L56+12
 	ldr	r3, [r8]
 	cmp	r3, #0
-	ble	.L38
+	ble	.L39
 	mov	r5, #0
-	mov	r9, #512
-	ldr	r4, .L55+16
-	ldr	r7, .L55+20
-	ldr	r10, .L55+24
-	ldr	r6, .L55+28
-	b	.L47
-.L46:
+	ldr	r4, .L56+16
+	ldr	r7, .L56+20
+	ldr	r6, .L56+24
+	ldr	r9, .L56+28
+	ldr	r10, .L56+32
+	b	.L48
+.L47:
 	ldr	r3, [r8]
 	add	r5, r5, #1
 	cmp	r3, r5
 	add	r4, r4, #68
-	ble	.L38
-.L47:
+	ble	.L39
+.L48:
 	ldr	r3, [r4, #60]
-	ldr	ip, [r4, #40]
 	cmp	r3, #0
+	moveq	r3, #512
+	ldr	ip, [r4, #40]
 	lsleq	ip, ip, #3
-	strheq	r9, [r7, ip]	@ movhi
-	beq	.L46
+	strheq	r3, [r7, ip]	@ movhi
+	beq	.L47
 	ldm	r4, {r0, r1}
+	ldr	lr, [r6]
 	add	r3, r1, #7
 	cmp	r1, #0
 	movlt	r1, r3
 	add	r3, r0, #7
 	cmp	r0, #0
-	ldr	lr, [r6]
 	movlt	r0, r3
 	cmp	lr, #0
 	add	r3, lr, #7
 	movlt	lr, r3
 	asr	r1, r1, #3
-	and	r2, r1, #255
 	lsl	r3, ip, #3
-	strh	r2, [r7, r3]	@ movhi
-	ldr	r2, [r4, #32]
-	and	r3, r10, r0, asr #3
-	orr	r2, r3, r2, lsl #14
-	ldr	r3, [r6, #20]
+	and	fp, r1, #255
+	strh	fp, [r7, r3]	@ movhi
 	asr	lr, lr, #3
-	str	r3, [sp, #12]
-	ldr	r3, [r6, #24]
+	ldr	r3, [r6, #20]
+	ldr	r2, .L56+36
 	str	lr, [sp]
+	ldr	lr, [r4, #32]
+	str	r3, [sp, #12]
+	and	r2, r2, r0, asr #3
+	ldr	r3, [r6, #24]
+	orr	r2, r2, lr, lsl #14
 	ldr	lr, [r4, #44]
 	str	r3, [sp, #8]
 	ldr	r3, [r6, #8]
@@ -396,65 +410,59 @@ updateAndDrawHazards:
 	str	r3, [sp, #4]
 	asr	r0, r0, #3
 	strh	r2, [ip, #2]	@ movhi
-	strh	lr, [ip, #4]	@ movhi
 	ldr	r3, [r4, #20]
 	ldr	r2, [r4, #16]
-	ldr	ip, .L55+32
+	strh	lr, [ip, #4]	@ movhi
 	mov	lr, pc
-	bx	ip
+	bx	r9
 	cmp	r0, #0
-	beq	.L42
+	beq	.L43
 	ldr	r3, [r6, #32]
 	cmp	r3, #0
-	ble	.L43
+	ble	.L44
 	sub	r3, r3, #1
-	ldr	r2, [fp]
 	str	r3, [r6, #32]
-	ldr	r3, .L55+36
-	add	r2, r2, #60
-	str	r2, [r3]
-.L44:
+	bl	newShield
+.L45:
 	mov	r3, #0
 	str	r3, [r4, #60]
-.L42:
+.L43:
 	ldr	r3, [r4, #4]
 	cmp	r3, #1280
 	movgt	r3, #0
 	addle	r3, r3, #2
 	strgt	r3, [r4, #60]
 	strle	r3, [r4, #4]
-	b	.L46
-.L38:
+	b	.L47
+.L39:
 	add	sp, sp, #20
 	@ sp needed
 	pop	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
 	bx	lr
-.L43:
-	ldr	r3, .L55+40
+.L44:
 	mov	lr, pc
-	bx	r3
-	b	.L44
-.L54:
-	ldr	r3, .L55+44
+	bx	r10
+	b	.L45
+.L55:
+	ldr	r3, .L56+40
 	mov	lr, pc
 	bx	r3
 	mov	r0, #0
 	bl	hazardFactory
-	b	.L39
-.L56:
+	b	.L40
+.L57:
 	.align	2
-.L55:
+.L56:
 	.word	time
 	.word	143165576
 	.word	71582788
 	.word	.LANCHOR0
 	.word	hazards
 	.word	shadowOAM
-	.word	511
 	.word	player
 	.word	collision
-	.word	shieldTime
 	.word	goDeathPlastic
+	.word	511
 	.word	rand
 	.size	updateAndDrawHazards, .-updateAndDrawHazards
 	.align	2
@@ -468,25 +476,25 @@ initHazards:
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
 	@ link register save eliminated.
-	ldr	r3, .L61
+	ldr	r3, .L62
 	ldr	r1, [r3]
 	cmp	r1, #0
 	bxle	lr
 	mov	r2, #60
 	mov	r0, #0
-	ldr	r3, .L61+4
+	ldr	r3, .L62+4
 	add	r1, r1, r2
-.L59:
+.L60:
 	str	r2, [r3, #40]
 	add	r2, r2, #1
 	cmp	r2, r1
 	str	r0, [r3, #60]
 	add	r3, r3, #68
-	bne	.L59
+	bne	.L60
 	bx	lr
-.L62:
+.L63:
 	.align	2
-.L61:
+.L62:
 	.word	.LANCHOR0
 	.word	hazards
 	.size	initHazards, .-initHazards
@@ -501,26 +509,26 @@ checkHazardCollision:
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
 	push	{r4, r5, r6, r7, r8, lr}
-	ldr	r7, .L72
+	ldr	r7, .L73
 	ldr	r3, [r7]
 	cmp	r3, #0
 	sub	sp, sp, #16
-	ble	.L64
+	ble	.L65
 	mov	r5, #0
-	ldr	r4, .L72+4
-	ldr	r6, .L72+8
-	ldr	r8, .L72+12
-	b	.L66
-.L68:
+	ldr	r4, .L73+4
+	ldr	r6, .L73+8
+	ldr	r8, .L73+12
+	b	.L67
+.L69:
 	ldr	r3, [r7]
 	cmp	r3, r5
 	add	r4, r4, #68
-	ble	.L64
-.L66:
+	ble	.L65
+.L67:
 	ldr	r3, [r4, #60]
 	cmp	r3, #0
 	add	r5, r5, #1
-	beq	.L68
+	beq	.L69
 	add	r0, r6, #20
 	ldm	r0, {r0, r1}
 	ldr	r2, [r6, #8]
@@ -535,21 +543,21 @@ checkHazardCollision:
 	mov	lr, pc
 	bx	r8
 	cmp	r0, #0
-	beq	.L68
+	beq	.L69
 	mov	r0, #1
 	add	sp, sp, #16
 	@ sp needed
 	pop	{r4, r5, r6, r7, r8, lr}
 	bx	lr
-.L64:
+.L65:
 	mov	r0, #0
 	add	sp, sp, #16
 	@ sp needed
 	pop	{r4, r5, r6, r7, r8, lr}
 	bx	lr
-.L73:
+.L74:
 	.align	2
-.L72:
+.L73:
 	.word	.LANCHOR0
 	.word	hazards
 	.word	player
@@ -566,15 +574,15 @@ newHazard:
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
 	push	{r4, lr}
-	ldr	r3, .L76
+	ldr	r3, .L77
 	mov	lr, pc
 	bx	r3
 	mov	r0, #0
 	pop	{r4, lr}
 	b	hazardFactory
-.L77:
+.L78:
 	.align	2
-.L76:
+.L77:
 	.word	rand
 	.size	newHazard, .-newHazard
 	.global	NUM_HAZARDS
@@ -585,6 +593,8 @@ newHazard:
 	.comm	time,4,4
 	.comm	shells_owned,4,4
 	.comm	state,4,4
+	.comm	soundB,32,4
+	.comm	soundA,32,4
 	.data
 	.align	2
 	.set	.LANCHOR0,. + 0

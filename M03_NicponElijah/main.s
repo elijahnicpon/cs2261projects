@@ -10,6 +10,46 @@
 	.eabi_attribute 18, 4
 	.file	"main.c"
 	.text
+	.align	2
+	.global	init
+	.arch armv4t
+	.syntax unified
+	.arm
+	.fpu softvfp
+	.type	init, %function
+init:
+	@ Function supports interworking.
+	@ args = 0, pretend = 0, frame = 0
+	@ frame_needed = 0, uses_anonymous_args = 0
+	mov	r1, #4352
+	mov	r2, #67108864
+	push	{r4, lr}
+	ldr	r3, .L4
+	strh	r1, [r2]	@ movhi
+	mov	lr, pc
+	bx	r3
+	ldr	r3, .L4+4
+	mov	lr, pc
+	bx	r3
+	ldr	r2, .L4+8
+	ldr	r3, .L4+12
+	ldrh	r2, [r2, #48]
+	mov	lr, pc
+	bx	r3
+	ldr	r3, .L4+16
+	mov	lr, pc
+	bx	r3
+	pop	{r4, lr}
+	bx	lr
+.L5:
+	.align	2
+.L4:
+	.word	setupInterrupts
+	.word	setupSounds
+	.word	67109120
+	.word	hideSprites
+	.word	goStartMenu
+	.size	init, .-init
 	.section	.rodata.str1.4,"aMS",%progbits,1
 	.align	2
 .LC0:
@@ -17,7 +57,6 @@
 	.section	.text.startup,"ax",%progbits
 	.align	2
 	.global	main
-	.arch armv4t
 	.syntax unified
 	.arm
 	.fpu softvfp
@@ -27,96 +66,87 @@ main:
 	@ Volatile: function does not return.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	mov	r3, #67108864
-	mov	r2, #4352
 	push	{r4, r7, fp, lr}
-	strh	r2, [r3]	@ movhi
-	ldr	r4, .L17
-	ldr	r3, .L17+4
-	ldrh	r2, [r4, #48]
+	ldr	r3, .L21
 	mov	lr, pc
 	bx	r3
-	ldr	r3, .L17+8
+	ldr	r3, .L21+4
 	mov	lr, pc
 	bx	r3
-	ldr	r3, .L17+12
+	ldr	r0, .L21+8
+	ldr	r3, .L21+12
 	mov	lr, pc
 	bx	r3
-	ldr	r0, .L17+16
-	ldr	r3, .L17+20
-	mov	lr, pc
-	bx	r3
-	ldr	r6, .L17+24
-	ldr	r7, .L17+28
-	ldr	r5, .L17+32
-	ldr	fp, .L17+36
-	ldr	r10, .L17+40
-	ldr	r9, .L17+44
-	ldr	r8, .L17+48
-.L2:
+	ldr	r6, .L21+16
+	ldr	r7, .L21+20
+	ldr	r5, .L21+24
+	ldr	fp, .L21+28
+	ldr	r10, .L21+32
+	ldr	r9, .L21+36
+	ldr	r8, .L21+40
+	ldr	r4, .L21+44
+.L7:
 	ldr	r2, [r6]
 	ldrh	r3, [r7]
-.L3:
+.L8:
 	strh	r3, [r5]	@ movhi
 	ldrh	r3, [r4, #48]
 	strh	r3, [r7]	@ movhi
 	cmp	r2, #10
 	ldrls	pc, [pc, r2, asl #2]
-	b	.L3
-.L5:
-	.word	.L12
-	.word	.L11
-	.word	.L3
-	.word	.L10
-	.word	.L9
+	b	.L8
+.L10:
+	.word	.L17
+	.word	.L16
 	.word	.L8
-	.word	.L7
-	.word	.L3
-	.word	.L3
-	.word	.L6
-	.word	.L4
-.L4:
-	ldr	r3, .L17+52
-	mov	lr, pc
-	bx	r3
-	b	.L2
-.L6:
-	ldr	r3, .L17+56
-	mov	lr, pc
-	bx	r3
-	b	.L2
-.L7:
-	ldr	r3, .L17+60
-	mov	lr, pc
-	bx	r3
-	b	.L2
-.L8:
-	ldr	r3, .L17+64
-	mov	lr, pc
-	bx	r3
-	b	.L2
+	.word	.L15
+	.word	.L14
+	.word	.L13
+	.word	.L12
+	.word	.L8
+	.word	.L8
+	.word	.L11
+	.word	.L9
 .L9:
+	ldr	r3, .L21+48
+	mov	lr, pc
+	bx	r3
+	b	.L7
+.L11:
+	ldr	r3, .L21+52
+	mov	lr, pc
+	bx	r3
+	b	.L7
+.L12:
+	ldr	r3, .L21+56
+	mov	lr, pc
+	bx	r3
+	b	.L7
+.L13:
+	ldr	r3, .L21+60
+	mov	lr, pc
+	bx	r3
+	b	.L7
+.L14:
 	mov	lr, pc
 	bx	r8
-	b	.L2
-.L10:
+	b	.L7
+.L15:
 	mov	lr, pc
 	bx	r9
-	b	.L2
-.L11:
+	b	.L7
+.L16:
 	mov	lr, pc
 	bx	r10
-	b	.L2
-.L12:
+	b	.L7
+.L17:
 	mov	lr, pc
 	bx	fp
-	b	.L2
-.L18:
+	b	.L7
+.L22:
 	.align	2
-.L17:
-	.word	67109120
-	.word	hideSprites
-	.word	goStartMenu
+.L21:
+	.word	init
 	.word	mgba_open
 	.word	.LC0
 	.word	mgba_printf
@@ -127,46 +157,17 @@ main:
 	.word	doInfoMenu
 	.word	doAboutMenu
 	.word	doGame
+	.word	67109120
 	.word	doDeathPlastic
 	.word	doDeathEnergy
 	.word	doUpgradeMenu
 	.word	doPause
 	.size	main, .-main
-	.text
-	.align	2
-	.global	init
-	.syntax unified
-	.arm
-	.fpu softvfp
-	.type	init, %function
-init:
-	@ Function supports interworking.
-	@ args = 0, pretend = 0, frame = 0
-	@ frame_needed = 0, uses_anonymous_args = 0
-	mov	r1, #4352
-	mov	r3, #67108864
-	push	{r4, lr}
-	ldr	r2, .L21
-	strh	r1, [r3]	@ movhi
-	ldr	r3, .L21+4
-	ldrh	r2, [r2, #48]
-	mov	lr, pc
-	bx	r3
-	ldr	r3, .L21+8
-	mov	lr, pc
-	bx	r3
-	pop	{r4, lr}
-	bx	lr
-.L22:
-	.align	2
-.L21:
-	.word	67109120
-	.word	hideSprites
-	.word	goStartMenu
-	.size	init, .-init
 	.comm	oldButtons,2,2
 	.comm	buttons,2,2
 	.comm	time,4,4
 	.comm	shells_owned,4,4
 	.comm	state,4,4
+	.comm	soundB,32,4
+	.comm	soundA,32,4
 	.ident	"GCC: (devkitARM release 53) 9.1.0"
