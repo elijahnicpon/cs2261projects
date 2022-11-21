@@ -9,9 +9,9 @@ int state, hOff, vOff, time;
 OBJ_ATTR shadowOAM[128];
 Player player;
 
-int shieldUpgradeCosts[5] = {50, 100, 250, 500, 1000};
-int agilityUpgradeCosts[5] = {10, 25, 50, 100, 250};
-int energyUpgradeCosts[5] = {5, 50, 100, 250, 500};
+int shieldUpgradeCosts[6] = {50, 100, 250, 500, 1000, 0};
+int agilityUpgradeCosts[6] = {10, 25, 50, 100, 250, 0};
+int energyUpgradeCosts[6] = {5, 50, 100, 250, 500, 0};
 int cheatUsed;
 
 void attemptUpgradeAgility();
@@ -36,7 +36,7 @@ void doUpgradeMenu() {
         newGameRun();
     }
     if (BUTTON_HELD(BUTTON_L) && BUTTON_HELD(BUTTON_R) && BUTTON_HELD(BUTTON_SELECT) && !cheatUsed) {
-        shells_owned += 100;
+        shells_owned += 5000;
         cheatUsed = 1;
         updateAgility();
         updateEnergy();
@@ -53,7 +53,7 @@ void doUpgradeMenu() {
 }
 
 void attemptUpgradeEnergy() {
-    if (shells_owned >= energyUpgradeCosts[player.energyUpgradeValue]) {
+    if (shells_owned >= energyUpgradeCosts[player.energyUpgradeValue] && player.energyUpgradeValue < 5) {
         shells_owned -= energyUpgradeCosts[player.energyUpgradeValue];
         player.energyUpgradeValue++;
         updateShellsOwned();
@@ -69,7 +69,7 @@ void attemptUpgradeEnergy() {
 }
 
 void attemptUpgradeShield() {
-    if (shells_owned >= shieldUpgradeCosts[player.shieldUpgradeValue]) {
+    if (shells_owned >= shieldUpgradeCosts[player.shieldUpgradeValue] && player.shieldUpgradeValue < 5) {
         shells_owned -= shieldUpgradeCosts[player.shieldUpgradeValue];
         player.shieldUpgradeValue++;
         updateShellsOwned();
@@ -143,7 +143,7 @@ void updateEnergy() {
 }
 
 void attemptUpgradeAgility() {
-    if (shells_owned >= agilityUpgradeCosts[player.agilityUpgradeValue]) {
+    if (shells_owned >= agilityUpgradeCosts[player.agilityUpgradeValue] && player.agilityUpgradeValue < 5) {
         shells_owned -= agilityUpgradeCosts[player.agilityUpgradeValue];
         player.agilityUpgradeValue++;
         updateShellsOwned();

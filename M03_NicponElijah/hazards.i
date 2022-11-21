@@ -6,6 +6,7 @@
 void initHazards();
 void newHazard();
 void updateAndDrawHazards();
+void updateAndDrawShield();
 # 2 "hazards.c" 2
 # 1 "gba.h" 1
 
@@ -1430,7 +1431,7 @@ extern long double strtold (const char *restrict, char **restrict);
 
 
 # 11 "hazards.c"
-int time;
+int time, shieldTime;
 Player player;
 OBJ_ATTR shadowOAM[128];
 
@@ -1468,23 +1469,33 @@ void newHazard();
 void updateAndDrawHazards();
 int checkHazardCollision();
 void hazardFactory(int htype);
+int checkHazardSpawnLocation(int x, int width, int height);
 
 void hazardFactory(int htype) {
     for (int i = 0; i < NUM_HAZARDS; i++) {
         if (!hazards[i].active) {
             hazards[i].active = 1;
+            int x = (rand() % 240) * 8;
             switch (htype) {
                 case BAG:
 
                     hazards[i].hazardType = BAG;
                     hazards[i].active = 1;
-                    hazards[i].x = (rand() % 240) * 8;
-                    hazards[i].y = -8 * 12;
+                    hazards[i].height = 12;
+                    hazards[i].width = 22;
+
+
+                    while (checkHazardSpawnLocation(x, hazards[i].width, hazards[i].height)) {
+                        x = (rand() % 240) * 8;
+                    }
+                    hazards[i].x = x;
+
+                    hazards[i].y = -hazards[i].height * 8;
                     hazards[i].spriteIndex = ((19) * (32) + (0));
                     hazards[i].size = 2;
 
-                    hazards[i].height = 12;
-                    hazards[i].width = 22;
+
+
 
 
                     hazards[i].isTall = 0;
@@ -1494,18 +1505,79 @@ void hazardFactory(int htype) {
                     hazards[i].dy = 1;
                     break;
 
+                case STRAW:
+                    hazards[i].hazardType = STRAW;
+                    hazards[i].active = 1;
+                    hazards[i].height = 12;
+                    hazards[i].width = 22;
+                    hazards[i].spriteIndex = ((19) * (32) + (0));
+                    hazards[i].size = 2;
+
+
+
+                    while (checkHazardSpawnLocation(x, hazards[i].width, hazards[i].height)) {
+                        x = (rand() % 240) * 8;
+                    }
+                    hazards[i].x = x;
+                    hazards[i].y = -hazards[i].height * 8;
+
+                    hazards[i].isTall = 0;
+                    hazards[i].isWide = 0;
+                    hazards[i].isAnimated = 0;
+                    hazards[i].dx = 0;
+                    hazards[i].dy = 1;
+                    break;
+
+                case SIX_PACK:
+                    break;
+
                 default:
                     break;
             }
             break;
         }
     }
+}
+
+checkHazardSpawnLocation(int x, int width, int height) {
+    mgba_printf("checkHazardSpawnLocation(%d, %d, %d) called", x, width, height);
+    for (int i = 0; i < NUM_HAZARDS; i++) {
+        if (hazards[i].active) {
+            if (hazards[i].y < 10) {
+                if (collision(x / 8, -height, width, height, hazards[i].x / 8, hazards[i].y, hazards[i].width, hazards[i].height)) {
+                    return 1;
+                }
+            }
+        }
+    }
+    return 0;
+}
+
+void newShield() {
+    shieldTime = time + 60;
+}
+
+void updateAndDrawShield() {
+
+    if (shieldTime >= time) {
+        if (time % 2 != 0) {
+            shadowOAM[11].attr0 = (player.y & 0xFF) | (0 << 13);
+            shadowOAM[11].attr1 = (1 << 14) | ((player.x / 8) - 2 & 0x1FF);
+
+            shadowOAM[11].attr2 = ((8) * (32) + (21)) | ((0)<<10);
+        } else {
+            shadowOAM[11].attr0 = (2 << 8);
+        }
+
+    } else {
+        shadowOAM[11].attr0 = (2 << 8);
+    }
 
 }
 
 void updateAndDrawHazards() {
 
-    if (time % 180 == 0) {
+    if (time % 60 == 0) {
         newHazard();
     }
 
@@ -1519,10 +1591,17 @@ void updateAndDrawHazards() {
             shadowOAM[hazards[i].oam_entry].attr2 = hazards[i].spriteIndex | ((1)<<10);
 
             if (collision(hazards[i].x / 8, hazards[i].y / 8, hazards[i].height, hazards[i].width, player.x / 8, player.y, player.width, player.height)) {
+                if (player.shieldsLeft > 0) {
+                    player.shieldsLeft--;
+                    newShield();
+                } else {
+
+
+                    goDeathPlastic();
+                }
+
                 hazards[i].active = 0;
 
-
-                goDeathPlastic();
             }
 
             if (hazards[i].y > 160 * 8) {
@@ -1548,6 +1627,7 @@ void initHazards() {
         hazards[i].oam_entry = 60 + i;
         hazards[i].active = 0;
     }
+    int shieldTime = 0;
 }
 
 int checkHazardCollision() {
@@ -1587,5 +1667,5 @@ void newHazard() {
     int randVal = rand() % 100;
 
     hazardFactory(BAG);
-# 248 "hazards.c"
+# 327 "hazards.c"
 }

@@ -1475,6 +1475,7 @@ void doGame() {
     updateAndDrawShells();
     updateAndDrawHUD();
     updateAndDrawHazards();
+    updateAndDrawShield();
     if (checkNoEnergy()) {
         goDeathEnergy();
     }
@@ -1547,11 +1548,12 @@ void updateAndDrawShells() {
         if (shells[i].active) {
             shadowOAM[shells[i].entry_OAM].attr0 = (0 << 13) | (0 << 14) | ((shells[i].y / 8) & 0xFF);
             shadowOAM[shells[i].entry_OAM].attr1 = (0 << 14) | ((shells[i].x / 8) & 0x1FF);
-            shadowOAM[shells[i].entry_OAM].attr2 = shells[i].spriteIndex | ((shells[i].paletteIndex)<<12);
+            shadowOAM[shells[i].entry_OAM].attr2 = shells[i].spriteIndex | ((shells[i].paletteIndex)<<12) | ((1)<<10);
 
             if (collision(shells[i].x / 8, shells[i].y / 8, shells[i].height, shells[i].width, player.x / 8, player.y, player.width, player.height)) {
                 shells[i].active = 0;
                 shells_owned += shells[i].value;
+
             }
 
             if (shells[i].y > 160 * 8) {
@@ -1586,9 +1588,9 @@ void newShell() {
         if (!shells[i].active) {
 
 
-            shells[i].value = min(8, powpow(2, time / 1200) * (rand() % 2 == 0) ? 2 : 1);
+            shells[i].value = min(8, powpow(2, time / 120) * (rand() % 2 == 0) ? 2 : 1);
             shells[i].x = (rand() % 240) * 8;
-            shells[i].y = 0;
+            shells[i].y = -8*8;
             shells[i].active = 1;
 
             switch (shells[i].value) {
@@ -1606,8 +1608,6 @@ void newShell() {
             }
             break;
         }
-
-
     }
 }
 
@@ -1618,7 +1618,7 @@ int powpow(int base, int exp) {
         exp--;
         returnme *= base;
     }
-    mgba_printf("powpow(%d, %d) -> %d", base, expc, returnme);
+
     return returnme;
 }
 
@@ -1664,28 +1664,44 @@ void updateBackgrounds() {
 
     vOff -= 2;
     (*(volatile unsigned short *)0x04000016) = vOff / 8;
+
     (*(volatile unsigned short *)0x04000014) = 0;
+    (*(volatile unsigned short *)0x04000010) = 0;
+    (*(volatile unsigned short *)0x04000018) = 0;
 }
 
 void resumeGame() {
+# 294 "game.c"
     hideSprites();
-    state = GAME;
-    (*(volatile unsigned short *)0x4000000) = (1<<8) | (1<<9) | (1<<12) | 0;
 
-    (*(volatile unsigned short*)0x400000A) = (0<<14) | ((0)<<2) | ((31)<<8);
+    state = GAME;
+
+
+    (*(volatile unsigned short *)0x4000000) = (1<<8) | (1<<9) | (1<<12) | (1<<10) | 0;
+
+    (*(volatile unsigned short*)0x400000A) = 2 | (0<<14) | ((0)<<2) | ((31)<<8);
 
     DMANow(3, game_bg_copyPal, ((unsigned short *)0x5000000), 512/2);
     DMANow(3, game_bg_copyTiles, &((charblock *)0x6000000)[0], 352/2);
     DMANow(3, game_bg_copyMap, &((screenblock *)0x6000000)[31], 2048/2);
 
-    (*(volatile unsigned short*)0x4000008) = (0<<14) | ((1)<<2) | ((30)<<8);
 
-    DMANow(3, game_clouds_bgPal, ((unsigned short *)0x5000000) + 32, 512/2);
+    (*(volatile unsigned short*)0x4000008) = 0 | (0<<14) | ((1)<<2) | ((30)<<8);
+
     DMANow(3, game_clouds_bgTiles, &((charblock *)0x6000000)[1], 1632/2);
     DMANow(3, game_clouds_bgMap, &((screenblock *)0x6000000)[30], 2048/2);
 
+    (*(volatile unsigned short*)0x400000C) = 1 | (0<<14) | ((2)<<2) | ((29)<<8);
+
+    DMANow(3, game_clouds_SHADOW_bgTiles, &((charblock *)0x6000000)[2], 2048/2);
+    DMANow(3, game_clouds_SHADOW_bgMap, &((screenblock *)0x6000000)[29], 2048/2);
+
+
+
     DMANow(3, game_ssPal, ((unsigned short *)0x5000200), 512/2);
     DMANow(3, game_ssTiles, &((charblock *)0x6000000)[4], 32768/2);
+
+
 
     shadowOAM[0].attr0 = (0 << 13) | (1 << 14) | (2 & 0xFF);
     shadowOAM[0].attr1 = (2 << 14) | (2 & 0x1FF);
@@ -1694,31 +1710,43 @@ void resumeGame() {
     shadowOAM[1].attr1 = (2 << 14) | (34 & 0x1FF);
     shadowOAM[1].attr2 = ((4) * (32) + (4));
 
-    initShells();
+
     initEnergyBar();
 
     DMANow(3, shadowOAM, ((OBJ_ATTR*)(0x7000000)), 512);
 }
 
 void newGameRun() {
+# 358 "game.c"
     hideSprites();
-    state = GAME;
-    (*(volatile unsigned short *)0x4000000) = (1<<8) | (1<<9) | (1<<12) | 0;
 
-    (*(volatile unsigned short*)0x400000A) = (0<<14) | ((0)<<2) | ((31)<<8);
+    state = GAME;
+
+
+    (*(volatile unsigned short *)0x4000000) = (1<<8) | (1<<9) | (1<<12) | (1<<10) | 0;
+
+    (*(volatile unsigned short*)0x400000A) = 2 | (0<<14) | ((0)<<2) | ((31)<<8);
 
     DMANow(3, game_bg_copyPal, ((unsigned short *)0x5000000), 512/2);
     DMANow(3, game_bg_copyTiles, &((charblock *)0x6000000)[0], 352/2);
     DMANow(3, game_bg_copyMap, &((screenblock *)0x6000000)[31], 2048/2);
 
-    (*(volatile unsigned short*)0x4000008) = (0<<14) | ((1)<<2) | ((30)<<8);
 
-    DMANow(3, game_clouds_bgPal, ((unsigned short *)0x5000000) + 32, 512/2);
+    (*(volatile unsigned short*)0x4000008) = 0 | (0<<14) | ((1)<<2) | ((30)<<8);
+
     DMANow(3, game_clouds_bgTiles, &((charblock *)0x6000000)[1], 1632/2);
     DMANow(3, game_clouds_bgMap, &((screenblock *)0x6000000)[30], 2048/2);
 
+    (*(volatile unsigned short*)0x400000C) = 1 | (0<<14) | ((2)<<2) | ((29)<<8);
+
+    DMANow(3, game_clouds_SHADOW_bgTiles, &((charblock *)0x6000000)[2], 2048/2);
+    DMANow(3, game_clouds_SHADOW_bgMap, &((screenblock *)0x6000000)[29], 2048/2);
+
+
+
     DMANow(3, game_ssPal, ((unsigned short *)0x5000200), 512/2);
     DMANow(3, game_ssTiles, &((charblock *)0x6000000)[4], 32768/2);
+
 
 
 

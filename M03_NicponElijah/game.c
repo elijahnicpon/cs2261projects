@@ -76,6 +76,7 @@ void doGame() {
     updateAndDrawShells();
     updateAndDrawHUD();
     updateAndDrawHazards();
+    updateAndDrawShield();
     if (checkNoEnergy()) {
         goDeathEnergy();
     }
@@ -148,11 +149,12 @@ void updateAndDrawShells() {
         if (shells[i].active) {
             shadowOAM[shells[i].entry_OAM].attr0 = ATTR0_4BPP | ATTR0_SQUARE | ((shells[i].y / 8) & 0xFF);
             shadowOAM[shells[i].entry_OAM].attr1 = ATTR1_TINY | ((shells[i].x / 8) & 0x1FF);
-            shadowOAM[shells[i].entry_OAM].attr2 = shells[i].spriteIndex | ATTR2_PALROW(shells[i].paletteIndex);
+            shadowOAM[shells[i].entry_OAM].attr2 = shells[i].spriteIndex | ATTR2_PALROW(shells[i].paletteIndex) | ATTR2_PRIORITY(1);
 
             if (collision(shells[i].x / 8, shells[i].y / 8, shells[i].height, shells[i].width, player.x / 8, player.y, player.width, player.height)) {
                 shells[i].active = 0;
                 shells_owned += shells[i].value;
+                //TODO: play good sound
             }
 
             if (shells[i].y > 160 * 8) {
@@ -187,9 +189,9 @@ void newShell() {
         if (!shells[i].active) {
             //TODO: balance shell vals
             //shells[i].value = min(8, powpow(2, (time / 1200 * (rand() % 4))));
-            shells[i].value = min(8, powpow(2, time / 1200) * (rand() % 2 == 0) ? 2 : 1);
+            shells[i].value = min(8, powpow(2, time / 120) * (rand() % 2 == 0) ? 2 : 1);
             shells[i].x = (rand() % 240) * 8;
-            shells[i].y = 0;
+            shells[i].y = -8*8;
             shells[i].active = 1;
 
             switch (shells[i].value) {
@@ -207,8 +209,6 @@ void newShell() {
             }
             break;
         }
-        
-
     }
 }
 
@@ -219,7 +219,7 @@ int powpow(int base, int exp) {
         exp--;
         returnme *= base;
     }
-    mgba_printf("powpow(%d, %d) -> %d", base, expc, returnme);
+    //mgba_printf("powpow(%d, %d) -> %d", base, expc, returnme);
     return returnme;
 }
 
@@ -265,28 +265,62 @@ void updateBackgrounds() {
 
     vOff -= 2;
     REG_BG1VOFF = vOff / 8;
+
     REG_BG1HOFF = 0;
+    REG_BG0HOFF = 0;
+    REG_BG2HOFF = 0;
 }
 
 void resumeGame() {
-    hideSprites();
-    state = GAME;
-    REG_DISPCTL = BG0_ENABLE | BG1_ENABLE | SPRITE_ENABLE | MODE0;
+    // hideSprites();
+    // state = GAME;
+    // REG_DISPCTL = BG0_ENABLE | BG1_ENABLE | SPRITE_ENABLE | MODE0;
 
-    REG_BG1CNT = BG_SIZE_SMALL | BG_CHARBLOCK(0) | BG_SCREENBLOCK(31);
+    // REG_BG1CNT = BG_SIZE_SMALL | BG_CHARBLOCK(0) | BG_SCREENBLOCK(31);
+
+    // DMANow(3, game_bg_copyPal, PALETTE, game_bg_copyPalLen/2);
+    // DMANow(3, game_bg_copyTiles, &CHARBLOCK[0], game_bg_copyTilesLen/2);
+    // DMANow(3, game_bg_copyMap, &SCREENBLOCK[31], game_bg_copyMapLen/2);
+
+    // REG_BG0CNT = BG_SIZE_SMALL | BG_CHARBLOCK(1) | BG_SCREENBLOCK(30);
+
+    // DMANow(3, game_clouds_bgPal, PALETTE + 32, game_clouds_bgPalLen/2);
+    // DMANow(3, game_clouds_bgTiles, &CHARBLOCK[1], game_clouds_bgTilesLen/2);
+    // DMANow(3, game_clouds_bgMap, &SCREENBLOCK[30], game_clouds_bgMapLen/2);
+
+    // DMANow(3, game_ssPal, SPRITEPALETTE, game_ssPalLen/2);
+    // DMANow(3, game_ssTiles, &CHARBLOCK[4], game_ssTilesLen/2);
+
+    hideSprites();
+
+    state = GAME;
+
+    //BACKGROUNDS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    REG_DISPCTL = BG0_ENABLE | BG1_ENABLE | SPRITE_ENABLE | BG2_ENABLE | MODE0;
+                // 2 = PRIORITY
+    REG_BG1CNT = 2 | BG_SIZE_SMALL | BG_CHARBLOCK(0) | BG_SCREENBLOCK(31);
 
     DMANow(3, game_bg_copyPal, PALETTE, game_bg_copyPalLen/2);
     DMANow(3, game_bg_copyTiles, &CHARBLOCK[0], game_bg_copyTilesLen/2);
     DMANow(3, game_bg_copyMap, &SCREENBLOCK[31], game_bg_copyMapLen/2);
 
-    REG_BG0CNT = BG_SIZE_SMALL | BG_CHARBLOCK(1) | BG_SCREENBLOCK(30);
+                // 0 = PRIORITY
+    REG_BG0CNT = 0 | BG_SIZE_SMALL | BG_CHARBLOCK(1) | BG_SCREENBLOCK(30);
 
-    DMANow(3, game_clouds_bgPal, PALETTE + 32, game_clouds_bgPalLen/2);
     DMANow(3, game_clouds_bgTiles, &CHARBLOCK[1], game_clouds_bgTilesLen/2);
     DMANow(3, game_clouds_bgMap, &SCREENBLOCK[30], game_clouds_bgMapLen/2);
+                // 1 = PRIORITY
+    REG_BG2CNT = 1 | BG_SIZE_SMALL | BG_CHARBLOCK(2) | BG_SCREENBLOCK(29);
 
+    DMANow(3, game_clouds_SHADOW_bgTiles, &CHARBLOCK[2], game_clouds_SHADOW_bgTilesLen/2);
+    DMANow(3, game_clouds_SHADOW_bgMap, &SCREENBLOCK[29], game_clouds_SHADOW_bgMapLen/2);
+
+
+    //SPRITES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     DMANow(3, game_ssPal, SPRITEPALETTE, game_ssPalLen/2);
     DMANow(3, game_ssTiles, &CHARBLOCK[4], game_ssTilesLen/2);
+
+    //~~~~~~~~~~~~~~~~~~~~~~~~
 
     shadowOAM[0].attr0 = ATTR0_4BPP | ATTR0_WIDE | (2 & 0xFF);
     shadowOAM[0].attr1 = ATTR1_MEDIUM | (2 & 0x1FF);
@@ -295,32 +329,62 @@ void resumeGame() {
     shadowOAM[1].attr1 = ATTR1_MEDIUM | (34 & 0x1FF);
     shadowOAM[1].attr2 = OFFSET(4,4,32); //real@(4,4,32)
 
-    initShells();
+    // initShells();
     initEnergyBar();
 
     DMANow(3, shadowOAM, OAM, 512);
 }
 
 void newGameRun() {
-    hideSprites();
-    state = GAME;
-    REG_DISPCTL = BG0_ENABLE | BG1_ENABLE | SPRITE_ENABLE | MODE0;
+    // hideSprites();
+    // state = GAME;
+    // REG_DISPCTL = BG0_ENABLE | BG1_ENABLE | SPRITE_ENABLE | MODE0;
 
-    REG_BG1CNT = BG_SIZE_SMALL | BG_CHARBLOCK(0) | BG_SCREENBLOCK(31);
+    // REG_BG1CNT = BG_SIZE_SMALL | BG_CHARBLOCK(0) | BG_SCREENBLOCK(31);
+
+    // DMANow(3, game_bg_copyPal, PALETTE, game_bg_copyPalLen/2);
+    // DMANow(3, game_bg_copyTiles, &CHARBLOCK[0], game_bg_copyTilesLen/2);
+    // DMANow(3, game_bg_copyMap, &SCREENBLOCK[31], game_bg_copyMapLen/2);
+
+    // REG_BG0CNT = BG_SIZE_SMALL | BG_CHARBLOCK(1) | BG_SCREENBLOCK(30);
+
+    // DMANow(3, game_clouds_bgPal, PALETTE + 32, game_clouds_bgPalLen/2);
+    // DMANow(3, game_clouds_bgTiles, &CHARBLOCK[1], game_clouds_bgTilesLen/2);
+    // DMANow(3, game_clouds_bgMap, &SCREENBLOCK[30], game_clouds_bgMapLen/2);
+
+    // DMANow(3, game_ssPal, SPRITEPALETTE, game_ssPalLen/2);
+    // DMANow(3, game_ssTiles, &CHARBLOCK[4], game_ssTilesLen/2);
+
+    hideSprites();
+
+    state = GAME;
+
+    //BACKGROUNDS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    REG_DISPCTL = BG0_ENABLE | BG1_ENABLE | SPRITE_ENABLE | BG2_ENABLE | MODE0;
+                // 2 = PRIORITY
+    REG_BG1CNT = 2 | BG_SIZE_SMALL | BG_CHARBLOCK(0) | BG_SCREENBLOCK(31);
 
     DMANow(3, game_bg_copyPal, PALETTE, game_bg_copyPalLen/2);
     DMANow(3, game_bg_copyTiles, &CHARBLOCK[0], game_bg_copyTilesLen/2);
     DMANow(3, game_bg_copyMap, &SCREENBLOCK[31], game_bg_copyMapLen/2);
 
-    REG_BG0CNT = BG_SIZE_SMALL | BG_CHARBLOCK(1) | BG_SCREENBLOCK(30);
+                // 0 = PRIORITY
+    REG_BG0CNT = 0 | BG_SIZE_SMALL | BG_CHARBLOCK(1) | BG_SCREENBLOCK(30);
 
-    DMANow(3, game_clouds_bgPal, PALETTE + 32, game_clouds_bgPalLen/2);
     DMANow(3, game_clouds_bgTiles, &CHARBLOCK[1], game_clouds_bgTilesLen/2);
     DMANow(3, game_clouds_bgMap, &SCREENBLOCK[30], game_clouds_bgMapLen/2);
+                // 1 = PRIORITY
+    REG_BG2CNT = 1 | BG_SIZE_SMALL | BG_CHARBLOCK(2) | BG_SCREENBLOCK(29);
 
+    DMANow(3, game_clouds_SHADOW_bgTiles, &CHARBLOCK[2], game_clouds_SHADOW_bgTilesLen/2);
+    DMANow(3, game_clouds_SHADOW_bgMap, &SCREENBLOCK[29], game_clouds_SHADOW_bgMapLen/2);
+
+
+    //SPRITES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     DMANow(3, game_ssPal, SPRITEPALETTE, game_ssPalLen/2);
     DMANow(3, game_ssTiles, &CHARBLOCK[4], game_ssTilesLen/2);
 
+    //~~~~~~~~~~~~~~~~~~~~~~~~
 
     //HUD
     shadowOAM[0].attr0 = ATTR0_4BPP | ATTR0_WIDE | (2 & 0xFF);

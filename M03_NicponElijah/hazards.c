@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int time;
+int time, shieldTime;
 Player player;
 OBJ_ATTR shadowOAM[128];
 
@@ -46,23 +46,33 @@ void newHazard();
 void updateAndDrawHazards();
 int checkHazardCollision();
 void hazardFactory(int htype);
+int checkHazardSpawnLocation(int x, int width, int height);
 
 void hazardFactory(int htype) {
     for (int i = 0; i < NUM_HAZARDS; i++) {
         if (!hazards[i].active) {
             hazards[i].active = 1;
+            int x = (rand() % 240) * 8;
             switch (htype) {
                 case BAG:
                     //mgba_printf("hazards[%d] instantiated. type: %d, oam: %d", i, htype, hazards[i].oam_entry);
                     hazards[i].hazardType = BAG;
                     hazards[i].active = 1;
-                    hazards[i].x = (rand() % 240) * 8;
-                    hazards[i].y = -8 * 12;
-                    hazards[i].spriteIndex = OFFSET(0,19,32);
-                    hazards[i].size = 2;
-                    // hazards[i].deathfn = goDeathPlastic();
                     hazards[i].height = 12;
                     hazards[i].width = 22;
+                    //hazards[i].x = (rand() % 240) * 8;
+
+                    while (checkHazardSpawnLocation(x, hazards[i].width, hazards[i].height)) {
+                        x = (rand() % 240) * 8;
+                    }
+                    hazards[i].x = x;
+
+                    hazards[i].y = -hazards[i].height * 8;
+                    hazards[i].spriteIndex = OFFSET(0,19,32);
+                    hazards[i].size = 2;
+                    //TODO:
+                    // hazards[i].deathfn = goDeathPlastic();
+                    
                     
                     // defaults
                     hazards[i].isTall = 0;
@@ -71,6 +81,32 @@ void hazardFactory(int htype) {
                     hazards[i].dx = 0;
                     hazards[i].dy = 1;
                     break;
+
+                case STRAW:
+                    hazards[i].hazardType = STRAW;
+                    hazards[i].active = 1;
+                    hazards[i].height = 12;
+                    hazards[i].width = 22;
+                    hazards[i].spriteIndex = OFFSET(0,19,32);
+                    hazards[i].size = 2;
+                    //TODO:
+                    // hazards[i].deathfn = goDeathPlastic();
+
+                    while (checkHazardSpawnLocation(x, hazards[i].width, hazards[i].height)) {
+                        x = (rand() % 240) * 8;
+                    }
+                    hazards[i].x = x;
+                    hazards[i].y = -hazards[i].height * 8;
+                    // reset defaults
+                    hazards[i].isTall = 0;
+                    hazards[i].isWide = 0;
+                    hazards[i].isAnimated = 0;
+                    hazards[i].dx = 0;
+                    hazards[i].dy = 1;
+                    break;
+
+                case SIX_PACK:
+                    break;
                 
                 default:
                     break;
@@ -78,12 +114,47 @@ void hazardFactory(int htype) {
             break;
         }
     }
+}
+
+checkHazardSpawnLocation(int x, int width, int height) {
+    mgba_printf("checkHazardSpawnLocation(%d, %d, %d) called", x, width, height);
+    for (int i = 0; i < NUM_HAZARDS; i++) {
+        if (hazards[i].active) {
+            if (hazards[i].y < 10) {
+                if (collision(x / 8, -height, width, height, hazards[i].x / 8, hazards[i].y, hazards[i].width, hazards[i].height)) {
+                    return 1;
+                }
+            }
+        }
+    }
+    return 0;
+}
+
+void newShield() {
+    shieldTime = time + 60;
+}
+
+void updateAndDrawShield() {
+    //mgba_printf("draw shield if (%d >= %d)?", shieldTime, time);
+    if (shieldTime >= time) {
+        if (time % 2 != 0) {
+            shadowOAM[11].attr0 = (player.y & 0xFF) | ATTR0_4BPP;
+            shadowOAM[11].attr1 = ATTR1_SMALL | ((player.x / 8) - 2 & 0x1FF);
+            //shadowOAM[2].attr2 = OFFSET(20,9,32) | ATTR2_PRIORITY(1);
+            shadowOAM[11].attr2 = OFFSET(21,8,32) | ATTR2_PRIORITY(0);
+        } else {
+            shadowOAM[11].attr0 = ATTR0_HIDE;
+        }
+        
+    } else {
+        shadowOAM[11].attr0 = ATTR0_HIDE; // intentionally creates flicker
+    }
     
 }
 
 void updateAndDrawHazards() { // MATCH UPDATE AND DRAW SHELLS
 
-    if (time % 180 == 0) { // every 3 seconds
+    if (time % 60 == 0) { // every 3 seconds
         newHazard();
     }
 
@@ -97,10 +168,17 @@ void updateAndDrawHazards() { // MATCH UPDATE AND DRAW SHELLS
             shadowOAM[hazards[i].oam_entry].attr2 = hazards[i].spriteIndex | ATTR2_PRIORITY(1);
 
             if (collision(hazards[i].x / 8, hazards[i].y / 8, hazards[i].height, hazards[i].width, player.x / 8, player.y, player.width, player.height)) {
+                if (player.shieldsLeft > 0) {
+                    player.shieldsLeft--;
+                    newShield();
+                } else {
+                    //TODO:
+                    //hazards[i].deathfn();
+                    goDeathPlastic();
+                }
+                
                 hazards[i].active = 0;
-                //TODO:
-                //hazards[i].deathfn();
-                goDeathPlastic();
+                
             }
 
             if (hazards[i].y > 160 * 8) {
@@ -126,6 +204,7 @@ void initHazards() {
         hazards[i].oam_entry = 60 + i;
         hazards[i].active = 0;
     }
+    int shieldTime = 0;
 }
 
 int checkHazardCollision() {
@@ -239,10 +318,10 @@ void newHazard() {
     //         } else if (33 < randVal && randVal < 66) {
     //             newBoat();
     //         } else {
+    // }
     //             newDynamite();
     //         }
 
     //     default:
     //         break;
-    // }
 }
