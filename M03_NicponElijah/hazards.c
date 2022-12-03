@@ -14,6 +14,9 @@ int time, shieldTime;
 Player player;
 OBJ_ATTR shadowOAM[128];
 
+int sharkFrames[6] = {11, 15, 19, 23, 19, 15};
+// int sharkFrames[6] = {15,15,15,15,15,15,15};
+
 
 typedef struct {
     int x;
@@ -32,8 +35,11 @@ typedef struct {
     int isAnimated;
     int numFrames;
     int timeToDisplayFrame;
+    int frame;
     int active;
-    void (*deathfn)(void);
+    //void (*deathfn)(void); bad!
+    //void* (*deathfn)(void* self); try!
+    void* (*deathfn)(void);
 
 } Hazard;
 
@@ -72,9 +78,7 @@ void hazardFactory(int htype) {
                     hazards[i].y = -hazards[i].height * 8;
                     hazards[i].spriteIndex = OFFSET(0,19,32);
                     hazards[i].size = 2;
-                    //TODO:
-                    // hazards[i].deathfn = goDeathPlastic();
-                    
+                    hazards[i].deathfn = goDeathPlastic;
                     
                     // defaults
                     hazards[i].isTall = 0;
@@ -90,9 +94,8 @@ void hazardFactory(int htype) {
                     hazards[i].height = 5;
                     hazards[i].width = 15;
                     hazards[i].spriteIndex = OFFSET(0,23,32);
-                    hazards[i].size = 2;
-                    //TODO:
-                    // hazards[i].deathfn = goDeathPlastic();
+                    hazards[i].size = 0;
+                    hazards[i].deathfn = goDeathPlastic;
 
                     while (checkHazardSpawnLocation(x, hazards[i].width, hazards[i].height)) {
                         x = (rand() % 240) * 8;
@@ -108,8 +111,61 @@ void hazardFactory(int htype) {
                     break;
 
                 case SIX_PACK:
+                    hazards[i].hazardType = SIX_PACK;
+                    hazards[i].active = 1;
+                    hazards[i].height = 19;
+                    hazards[i].width = 19;
+
+                    while (checkHazardSpawnLocation(x, hazards[i].width, hazards[i].height)) {
+                        x = (rand() % 240) * 8;
+                    }
+                    hazards[i].x = x;
+
+                    hazards[i].y = -hazards[i].height * 8;
+                    hazards[i].spriteIndex = OFFSET(0,15,32);
+                    hazards[i].size = 2;
+                    hazards[i].deathfn = goDeathPlastic;
+                    
+                    
+                    // defaults
+                    hazards[i].isTall = 0;
+                    hazards[i].isWide = 0;
+                    hazards[i].isAnimated = 0;
+                    hazards[i].dx = 0;
+                    hazards[i].dy = 1;
                     break;
-                
+
+                case SHARK:
+                    hazards[i].hazardType = SHARK;
+                    hazards[i].active = 1;
+                    hazards[i].height = 43;
+                    hazards[i].width = 20;
+
+                    while (checkHazardSpawnLocation(x, hazards[i].width, hazards[i].height)) {
+                        x = (rand() % 240) * 8;
+                    }
+                    hazards[i].x = x;
+                    
+                    hazards[i].y = -hazards[i].height * 8;
+                    hazards[i].spriteIndex = sharkFrames[0];
+                    hazards[i].size = 3;
+                    hazards[i].deathfn = goDeathPlastic;
+                    
+                    //animation
+                    hazards[i].isAnimated = 1;
+                    hazards[i].frame = 0;
+                    hazards[i].spriteIndex = sharkFrames[hazards[i].frame];
+                    hazards[i].numFrames = 6;
+                    hazards[i].timeToDisplayFrame = 15 + (rand() % 3);
+                    
+                    // defaults
+                    hazards[i].isTall = 1;
+                    hazards[i].isWide = 0;
+                    hazards[i].dx = 0;
+                    hazards[i].dy = 1;
+
+                    break;
+
                 default:
                     break;
             }
@@ -122,7 +178,9 @@ checkHazardSpawnLocation(int x, int width, int height) {
     mgba_printf("checkHazardSpawnLocation(%d, %d, %d) called", x, width, height);
     for (int i = 0; i < NUM_HAZARDS; i++) {
         if (hazards[i].active) {
-            if (hazards[i].y < 20) {
+            if (hazards[i].y < 40
+            
+            ) {
                 if (collision(x / 8, -height, width, height, hazards[i].x / 8, hazards[i].y, hazards[i].width, hazards[i].height)) {
                     return 1;
                 }
@@ -157,7 +215,7 @@ void updateAndDrawShield() {
 
 void updateAndDrawHazards() { // MATCH UPDATE AND DRAW SHELLS
 
-    if (time % 60 == 0) { // every 3 seconds
+    if (time % 60 == 0) { // every 1 seconds
         newHazard();
     }
 
@@ -165,6 +223,8 @@ void updateAndDrawHazards() { // MATCH UPDATE AND DRAW SHELLS
         if (hazards[i].active) {
             //shadowOAM[hazards[i].oam_entry].attr0 = ((hazards[i].y / 8) & (0xFF)) | ATTR0_4BPP | (hazards[i].isTall == 0) ? 0 : ATTR0_TALL | (hazards[i].isWide == 0) ? 0 : ATTR0_WIDE;
             //shadowOAM[hazards[i].oam_entry].attr0 = (hazards[i].y / 8) & (0xFF) | ATTR0_4BPP;
+            //shadowOAM[hazards[i].oam_entry].attr1 = ((hazards[i].x / 8) & (0x1FF)) | (hazards[i].size == 1) ? ATTR1_SMALL : 0 | (hazards[i].size == 2) ? ATTR1_MEDIUM : 0 | (hazards[i].size == 3) ? ATTR1_LARGE : 0;
+            //shadowOAM[hazards[i].oam_entry].attr1 = ((hazards[i].x / 8) & (0x1FF));
             if (hazards[i].isTall) {
                 shadowOAM[hazards[i].oam_entry].attr0 = (hazards[i].y / 8) & (0xFF) | ATTR0_4BPP | ATTR0_TALL;
             } else if (hazards[i].isWide) {
@@ -173,10 +233,18 @@ void updateAndDrawHazards() { // MATCH UPDATE AND DRAW SHELLS
                 shadowOAM[hazards[i].oam_entry].attr0 = (hazards[i].y / 8) & (0xFF) | ATTR0_4BPP;
             }
 
+            //TODO: finish this lol
+            if (hazards[i].isAnimated && (time % hazards[i].timeToDisplayFrame) == 0) {
+                hazards[i].frame = (hazards[i].frame + 1) % hazards[i].numFrames;
+                if (hazards[i].hazardType == SHARK) {
+                    hazards[i].spriteIndex = sharkFrames[hazards[i].frame];
+                }
+                //TODO: other animated hazard cases
+            }
+
 
             shadowOAM[hazards[i].oam_entry].attr1 = ((hazards[i].x / 8) & (0x1FF)) | (hazards[i].size << 14); 
-            //shadowOAM[hazards[i].oam_entry].attr1 = ((hazards[i].x / 8) & (0x1FF)) | (hazards[i].size == 1) ? ATTR1_SMALL : 0 | (hazards[i].size == 2) ? ATTR1_MEDIUM : 0 | (hazards[i].size == 3) ? ATTR1_LARGE : 0;
-            //shadowOAM[hazards[i].oam_entry].attr1 = ((hazards[i].x / 8) & (0x1FF));
+            
             shadowOAM[hazards[i].oam_entry].attr2 = hazards[i].spriteIndex | ATTR2_PRIORITY(1);
 
             if (collision(hazards[i].x / 8, hazards[i].y / 8, hazards[i].height, hazards[i].width, player.x / 8, player.y, player.width, player.height)) {
@@ -185,8 +253,8 @@ void updateAndDrawHazards() { // MATCH UPDATE AND DRAW SHELLS
                     newShield();
                 } else {
                     //TODO:
-                    //hazards[i].deathfn();
-                    goDeathPlastic();
+                    hazards[i].deathfn();
+                    //goDeathPlastic();
                 }
                 
                 hazards[i].active = 0;
@@ -197,13 +265,11 @@ void updateAndDrawHazards() { // MATCH UPDATE AND DRAW SHELLS
                 hazards[i].active = 0;
             } else { // TODO: replace with gameSpeed
                 hazards[i].y += 2;
+                if (hazards[i].hazardType == SHARK) {
+                    hazards[i].y += 2;
+                }
                 //mgba_printf("%d", hazards[i].y);
             }
-
-            //TODO: finish this lol
-            // if (hazards[i].isAnimated && time % hazards[i].timeToDisplayFrame) {
-                //hazards[i].sprite
-            // }
 
         } else {
             shadowOAM[hazards[i].oam_entry].attr0 = ATTR0_HIDE;
@@ -255,7 +321,7 @@ void newHazard() {
 
     int randVal = rand() % 100;
 
-    hazardFactory(BAG);
+    hazardFactory(SHARK);
 
 
     //TODO: replace newXXX functions with hazardFactory() calls
