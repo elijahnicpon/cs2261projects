@@ -18,7 +18,7 @@ void doPause() {
     waitForVBlank();
     hOff += 1;
     vOff = 0;
-    time++;
+    //time++;
     REG_BG0VOFF = vOff;
     REG_BG0HOFF = hOff / 8;
 }

@@ -7,6 +7,7 @@ void initHazards();
 void newHazard();
 void updateAndDrawHazards();
 void updateAndDrawShield();
+void resetHazards();
 # 2 "hazards.c" 2
 # 1 "gba.h" 1
 
@@ -115,8 +116,11 @@ void setupInterrupts();
 typedef void (*ihp)(void);
 # 3 "hazards.c" 2
 # 1 "game_ss.h" 1
-# 20 "game_ss.h"
+# 21 "game_ss.h"
 extern const unsigned short game_ssTiles[16384];
+
+
+extern const unsigned short game_ssPal[256];
 # 4 "hazards.c" 2
 # 1 "states.h" 1
 # 1 "start_menu.h" 1
@@ -189,6 +193,7 @@ enum STATE {START_MENU, INFO_MENU, CONTROLS_MENU, ABOUT_MENU, GAME, PAUSE, UPGRA
 int state;
 int shells_owned;
 int time;
+int gameSpeed;
 
 typedef struct {
     int x;
@@ -1474,11 +1479,13 @@ extern const unsigned int shield_length;
 extern const signed char shield_data[];
 # 12 "hazards.c" 2
 
-int time, shieldTime;
+int time, shieldTime, cooldownTimer;
 Player player;
 OBJ_ATTR shadowOAM[128];
 
 int sharkFrames[6] = {11, 15, 19, 23, 19, 15};
+int dynamiteFrames[10] = {((8) * (32) + (11)), ((8) * (32) + (15)), ((8) * (32) + (19)), ((8) * (32) + (23)), ((8) * (32) + (27)),
+                        ((12) * (32) + (11)), ((12) * (32) + (15)), ((12) * (32) + (19)), ((12) * (32) + (23)), ((12) * (32) + (27)) };
 
 
 
@@ -1491,6 +1498,7 @@ typedef struct {
     int width;
     int isTall;
     int isWide;
+    int isHFlip;
     int size;
 
     int hazardType;
@@ -1524,7 +1532,8 @@ void hazardFactory(int htype) {
     for (int i = 0; i < NUM_HAZARDS; i++) {
         if (!hazards[i].active) {
             hazards[i].active = 1;
-            int x = (rand() % 240) * 8;
+            int x;
+            hazards[i].isHFlip = rand() % 2;
             switch (htype) {
                 case BAG:
 
@@ -1534,8 +1543,9 @@ void hazardFactory(int htype) {
                     hazards[i].width = 22;
 
 
+                    x = (rand() % 240 - hazards[i].width) * 8;
                     while (checkHazardSpawnLocation(x, hazards[i].width, hazards[i].height)) {
-                        x = (rand() % 240) * 8;
+                        x = (rand() % 240 - hazards[i].width) * 8;
                     }
                     hazards[i].x = x;
 
@@ -1561,8 +1571,9 @@ void hazardFactory(int htype) {
                     hazards[i].size = 0;
                     hazards[i].deathfn = goDeathPlastic;
 
+                    x = (rand() % 240 - hazards[i].width) * 8;
                     while (checkHazardSpawnLocation(x, hazards[i].width, hazards[i].height)) {
-                        x = (rand() % 240) * 8;
+                        x = (rand() % 240 - hazards[i].width) * 8;
                     }
                     hazards[i].x = x;
                     hazards[i].y = -hazards[i].height * 8;
@@ -1580,8 +1591,9 @@ void hazardFactory(int htype) {
                     hazards[i].height = 19;
                     hazards[i].width = 19;
 
+                    x = (rand() % 240 - hazards[i].width) * 8;
                     while (checkHazardSpawnLocation(x, hazards[i].width, hazards[i].height)) {
-                        x = (rand() % 240) * 8;
+                        x = (rand() % 240 - hazards[i].width) * 8;
                     }
                     hazards[i].x = x;
 
@@ -1605,13 +1617,13 @@ void hazardFactory(int htype) {
                     hazards[i].height = 43;
                     hazards[i].width = 20;
 
+                    x = (rand() % 240 - hazards[i].width) * 8;
                     while (checkHazardSpawnLocation(x, hazards[i].width, hazards[i].height)) {
-                        x = (rand() % 240) * 8;
+                        x = (rand() % 240 - hazards[i].width) * 8;
                     }
                     hazards[i].x = x;
 
                     hazards[i].y = -hazards[i].height * 8;
-                    hazards[i].spriteIndex = sharkFrames[0];
                     hazards[i].size = 3;
                     hazards[i].deathfn = goDeathPlastic;
 
@@ -1629,6 +1641,131 @@ void hazardFactory(int htype) {
                     hazards[i].dy = 1;
 
                     break;
+
+                case OIL:
+
+                    cooldownTimer = 99;
+
+                    hazards[i].hazardType = OIL;
+                    hazards[i].active = 1;
+                    hazards[i].height = 40;
+                    hazards[i].width = 48;
+
+                    x = (rand() % 240 - hazards[i].width) * 8;
+                    while (checkHazardSpawnLocation(x, hazards[i].width, hazards[i].height)) {
+                        x = (rand() % 240 - hazards[i].width) * 8;
+                    }
+                    hazards[i].x = x;
+
+                    hazards[i].y = -hazards[i].height * 8;
+                    hazards[i].spriteIndex = ((24) * (32) + (8));
+                    hazards[i].size = 3;
+
+                    hazards[i].deathfn = goDeathPlastic;
+
+
+
+                    hazards[i].isTall = 0;
+                    hazards[i].isWide = 0;
+                    hazards[i].isAnimated = 0;
+                    hazards[i].dx = 0;
+                    hazards[i].dy = 1;
+                    break;
+
+                case CYANIDE:
+
+                    cooldownTimer = 99;
+
+                    hazards[i].hazardType = CYANIDE;
+                    hazards[i].active = 1;
+                    hazards[i].height = 40;
+                    hazards[i].width = 52;
+
+                    x = (rand() % 240 - hazards[i].width) * 8;
+                    while (checkHazardSpawnLocation(x, hazards[i].width, hazards[i].height)) {
+                        x = (rand() % 240 - hazards[i].width) * 8;
+                    }
+                    hazards[i].x = x;
+
+                    hazards[i].y = -hazards[i].height * 8;
+                    hazards[i].spriteIndex = ((24) * (32) + (0));
+                    hazards[i].size = 3;
+
+                    hazards[i].deathfn = goDeathPlastic;
+
+
+
+                    hazards[i].isTall = 0;
+                    hazards[i].isWide = 0;
+                    hazards[i].isAnimated = 0;
+                    hazards[i].dx = 0;
+                    hazards[i].dy = 1;
+                    break;
+
+                case BOAT:
+
+                    cooldownTimer = 59;
+
+                    hazards[i].hazardType = BOAT;
+                    hazards[i].active = 1;
+                    hazards[i].height = 24;
+                    hazards[i].width = 63;
+
+
+
+
+
+
+
+                    hazards[i].dx = (hazards[i].isHFlip == 0) ? (rand() % 3) + 1 : -(rand() % 3) - 1;
+                    hazards[i].x = (rand() % 40) + ((hazards[i].dx > 0) ? 0 : 200);
+
+                    hazards[i].y = -hazards[i].height * 8;
+                    hazards[i].spriteIndex = ((8) * (32) + (0));
+                    hazards[i].size = 3;
+
+                    hazards[i].deathfn = goDeathPlastic;
+
+
+
+                    hazards[i].isTall = 0;
+                    hazards[i].isWide = 1;
+                    hazards[i].isAnimated = 0;
+
+                    hazards[i].dy = 1;
+                    break;
+
+
+                case DYNAMITE:
+                    cooldownTimer = 59;
+
+                    hazards[i].hazardType = DYNAMITE;
+                    hazards[i].active = 1;
+                    hazards[i].height = 32;
+                    hazards[i].width = 32;
+
+                    while (checkHazardSpawnLocation(x, hazards[i].width, hazards[i].height)) {
+                        x = (rand() % 240 - hazards[i].width) * 8;
+                    }
+                    hazards[i].x = x;
+
+                    hazards[i].y = -hazards[i].height * 8;
+                    hazards[i].size = 2;
+                    hazards[i].deathfn = goDeathPlastic;
+
+
+                    hazards[i].isAnimated = 1;
+                    hazards[i].frame = 0;
+                    hazards[i].spriteIndex = dynamiteFrames[hazards[i].frame];
+                    hazards[i].numFrames = 10;
+                    hazards[i].timeToDisplayFrame = 16 + (rand() % 3);
+
+
+                    hazards[i].isTall = 0;
+                    hazards[i].isWide = 0;
+                    hazards[i].dx = 0;
+                    hazards[i].dy = 1;
+
 
                 default:
                     break;
@@ -1677,9 +1814,13 @@ void updateAndDrawShield() {
 
 }
 
-void updateAndDrawHazards() {
+int minmin(int a, int b) {
+    return (a < b) ? a : b;
+}
 
-    if (time % 60 == 0) {
+void updateAndDrawHazards() {
+    cooldownTimer--;
+    if (time % 60 == 0 && cooldownTimer < 0 && (time / 60) < 120) {
         newHazard();
     }
 
@@ -1697,26 +1838,36 @@ void updateAndDrawHazards() {
                 shadowOAM[hazards[i].oam_entry].attr0 = (hazards[i].y / 8) & (0xFF) | (0 << 13);
             }
 
-
             if (hazards[i].isAnimated && (time % hazards[i].timeToDisplayFrame) == 0) {
-                hazards[i].frame = (hazards[i].frame + 1) % hazards[i].numFrames;
                 if (hazards[i].hazardType == SHARK) {
+                    hazards[i].frame = (hazards[i].frame + 1) % hazards[i].numFrames;
                     hazards[i].spriteIndex = sharkFrames[hazards[i].frame];
                 }
+                if (hazards[i].hazardType == DYNAMITE && hazards[i].y > 90 * 8) {
 
+                    hazards[i].frame = minmin(hazards[i].frame + 1, 9);
+                    hazards[i].spriteIndex = dynamiteFrames[hazards[i].frame];
+                }
             }
 
+            if (hazards[i].isHFlip) {
+                shadowOAM[hazards[i].oam_entry].attr1 = ((hazards[i].x / 8) & (0x1FF)) | (hazards[i].size << 14) | (1 << 12);
+            } else {
+                shadowOAM[hazards[i].oam_entry].attr1 = ((hazards[i].x / 8) & (0x1FF)) | (hazards[i].size << 14);
+            }
+            if (hazards[i].hazardType == DYNAMITE) {
+                shadowOAM[hazards[i].oam_entry].attr2 = hazards[i].spriteIndex | ((1)<<10) | ((1)<<12);
+            } else {
+                shadowOAM[hazards[i].oam_entry].attr2 = hazards[i].spriteIndex | ((1)<<10);
+            }
 
-            shadowOAM[hazards[i].oam_entry].attr1 = ((hazards[i].x / 8) & (0x1FF)) | (hazards[i].size << 14);
-
-            shadowOAM[hazards[i].oam_entry].attr2 = hazards[i].spriteIndex | ((1)<<10);
-
-            if (collision(hazards[i].x / 8, hazards[i].y / 8, hazards[i].height, hazards[i].width, player.x / 8, player.y, player.width, player.height)) {
+            if (collision(hazards[i].x / 8, hazards[i].y / 8, hazards[i].width, hazards[i].height, player.x / 8, player.y, player.width, player.height)) {
                 if (player.shieldsLeft > 0) {
                     player.shieldsLeft--;
                     newShield();
                 } else {
 
+                    pauseSounds();
                     hazards[i].deathfn();
 
                 }
@@ -1728,9 +1879,12 @@ void updateAndDrawHazards() {
             if (hazards[i].y > 160 * 8) {
                 hazards[i].active = 0;
             } else {
-                hazards[i].y += 2;
+                hazards[i].y += gameSpeed;
                 if (hazards[i].hazardType == SHARK) {
                     hazards[i].y += 2;
+                }
+                if (hazards[i].hazardType == BOAT) {
+                    hazards[i].x += hazards[i].dx;
                 }
 
             }
@@ -1741,12 +1895,22 @@ void updateAndDrawHazards() {
     }
 }
 
+void resetHazards() {
+    for (int i = 0; i < NUM_HAZARDS; i++) {
+        hazards[i].oam_entry = 60 + i;
+        hazards[i].active = 0;
+    }
+    shieldTime = 0;
+    cooldownTimer = 0;
+}
+
 void initHazards() {
     for (int i = 0; i < NUM_HAZARDS; i++) {
         hazards[i].oam_entry = 60 + i;
         hazards[i].active = 0;
     }
     int shieldTime = 0;
+    int cooldownTimer = 0;
 }
 
 int checkHazardCollision() {
@@ -1765,19 +1929,19 @@ void newHazard() {
     int timeInSeconds = time / 60;
     int timeBlock;
 
-    if (0 < timeInSeconds && timeInSeconds < 15){
+    if (0 <= timeInSeconds && timeInSeconds < 15){
         timeBlock = 0;
-    } else if (15 < timeInSeconds && timeInSeconds < 30) {
+    } else if (15 <= timeInSeconds && timeInSeconds < 30) {
         timeBlock = 1;
-    } else if (30 < timeInSeconds && timeInSeconds < 45) {
+    } else if (30 <= timeInSeconds && timeInSeconds < 45) {
         timeBlock = 2;
-    } else if (45 < timeInSeconds && timeInSeconds < 60) {
+    } else if (45 <= timeInSeconds && timeInSeconds < 60) {
         timeBlock = 3;
-    } else if (60 < timeInSeconds && timeInSeconds < 75) {
+    } else if (60 <= timeInSeconds && timeInSeconds < 75) {
         timeBlock = 4;
-    } else if (75 < timeInSeconds && timeInSeconds < 90) {
+    } else if (75 <= timeInSeconds && timeInSeconds < 90) {
         timeBlock = 5;
-    } else if (90 < timeInSeconds && timeInSeconds < 105) {
+    } else if (90 <= timeInSeconds && timeInSeconds < 105) {
         timeBlock = 6;
     } else {
         timeBlock = 7;
@@ -1785,6 +1949,119 @@ void newHazard() {
 
     int randVal = rand() % 100;
 
-    hazardFactory(SHARK);
-# 405 "hazards.c"
+    mgba_printf("newHazard(): time: %d, timeInSeconds: %d, timeBlock: %d", time, timeInSeconds, timeBlock);
+
+
+
+
+
+    switch (timeBlock) {
+        case 0:
+            if (0 < randVal && randVal < 50) {
+                hazardFactory(BAG);
+            } else {
+
+                hazardFactory(STRAW);
+            }
+            break;
+
+        case 1:
+            if (0 < randVal && randVal < 25) {
+
+                hazardFactory(BAG);
+            } else if (25 < randVal && randVal < 50) {
+
+                hazardFactory(STRAW);
+            } else if (50 < randVal && randVal < 75) {
+
+                hazardFactory(SIX_PACK);
+            } else {
+
+                hazardFactory(NET);
+            }
+            break;
+
+        case 2:
+            if (0 < randVal && randVal < 33) {
+
+                hazardFactory(SIX_PACK);
+            } else if (33 < randVal && randVal < 66) {
+
+                hazardFactory(NET);
+            } else {
+
+                hazardFactory(OIL);
+            }
+            break;
+
+        case 3:
+            if (0 < randVal && randVal < 25) {
+
+                hazardFactory(NET);
+            } else if (25 < randVal && randVal < 50) {
+
+                hazardFactory(OIL);
+            } else if (50 < randVal && randVal < 75) {
+
+                hazardFactory(SHARK);
+            } else {
+
+                hazardFactory(CYANIDE);
+            }
+            break;
+
+        case 4:
+            if (0 < randVal && randVal < 25) {
+
+                hazardFactory(NET);
+            } else if (25 < randVal && randVal < 50) {
+
+                hazardFactory(OIL);
+            } else if (50 < randVal && randVal < 75) {
+
+                hazardFactory(SHARK);
+            } else {
+
+                hazardFactory(CYANIDE);
+            }
+            break;
+
+        case 5:
+            if (0 < randVal && randVal < 33) {
+
+                hazardFactory(SHARK);
+            } else if (33 < randVal && randVal < 66) {
+                hazardFactory(BOAT);
+            } else {
+
+                hazardFactory(CYANIDE);
+            }
+            break;
+
+        case 6:
+            if (0 < randVal && randVal < 50) {
+
+                hazardFactory(SHARK);
+            } else {
+
+                hazardFactory(BOAT);
+            }
+            break;
+
+        case 7:
+            if (0 < randVal && randVal < 33) {
+
+                hazardFactory(SHARK);
+            } else if (33 < randVal && randVal < 66) {
+
+                hazardFactory(BOAT);
+            } else {
+
+                hazardFactory(DYNAMITE);
+            }
+            break;
+
+        default:
+            break;
+    }
 }

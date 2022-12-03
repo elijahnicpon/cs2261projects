@@ -37,10 +37,14 @@ void doDeathEnergy();
 void doUpgradeMenu();
 void goUpgradeMenu();
 # 8 "states.h" 2
+# 1 "controls_menu.h" 1
+void goControlsMenu();
+void doControlsMenu();
+# 9 "states.h" 2
 # 1 "death_plastic.h" 1
 void goDeathPlastic();
 void doDeathPlastic();
-# 9 "states.h" 2
+# 10 "states.h" 2
 # 1 "sound.h" 1
 
 
@@ -66,13 +70,14 @@ typedef struct{
 
 SOUND soundA;
 SOUND soundB;
-# 10 "states.h" 2
+# 11 "states.h" 2
 
 
 enum STATE {START_MENU, INFO_MENU, CONTROLS_MENU, ABOUT_MENU, GAME, PAUSE, UPGRADE_MENU, END_ANIMATION, END_MENU, DEATH_ENERGY, DEATH_PLASTIC, DEATH_OIL, DAETH_BOAT, DEATH_SHARK, DEATH_CYANIDE, DEATH_BLAST};
 int state;
 int shells_owned;
 int time;
+int gameSpeed;
 
 typedef struct {
     int x;
@@ -222,12 +227,12 @@ extern const unsigned short start_menus_ssTiles[16384];
 extern const unsigned short start_menus_ssPal[256];
 # 7 "start_menu.c" 2
 
-# 1 "town_w_ocean_view.h" 1
+# 1 "sixth_station.h" 1
 
 
-extern const unsigned int town_w_ocean_view_sampleRate;
-extern const unsigned int town_w_ocean_view_length;
-extern const signed char town_w_ocean_view_data[];
+extern const unsigned int sixth_station_sampleRate;
+extern const unsigned int sixth_station_length;
+extern const signed char sixth_station_data[];
 # 9 "start_menu.c" 2
 
 int state, hOff, vOff, time;
@@ -290,4 +295,5 @@ void goStartMenu() {
     DMANow(3, shadowOAM, ((OBJ_ATTR*)(0x7000000)), 512);
 
 
+    playSoundA(sixth_station_data, sixth_station_length - 500, 1);
 }

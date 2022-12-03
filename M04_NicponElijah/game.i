@@ -79,6 +79,7 @@ enum STATE {START_MENU, INFO_MENU, CONTROLS_MENU, ABOUT_MENU, GAME, PAUSE, UPGRA
 int state;
 int shells_owned;
 int time;
+int gameSpeed;
 
 typedef struct {
     int x;
@@ -247,6 +248,13 @@ extern const unsigned short game_clouds_SHADOW_bgMap[1024];
 
 extern const unsigned short game_clouds_SHADOW_bgPal[256];
 # 9 "game.c" 2
+# 1 "town_w_ocean_view.h" 1
+
+
+extern const unsigned int town_w_ocean_view_sampleRate;
+extern const unsigned int town_w_ocean_view_length;
+extern const signed char town_w_ocean_view_data[];
+# 10 "game.c" 2
 
 # 1 "coin.h" 1
 
@@ -254,7 +262,7 @@ extern const unsigned short game_clouds_SHADOW_bgPal[256];
 extern const unsigned int coin_sampleRate;
 extern const unsigned int coin_length;
 extern const signed char coin_data[];
-# 11 "game.c" 2
+# 12 "game.c" 2
 
 # 1 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdlib.h" 1 3
 # 10 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdlib.h" 3
@@ -1064,7 +1072,7 @@ extern long double _strtold_r (struct _reent *, const char *restrict, char **res
 extern long double strtold (const char *restrict, char **restrict);
 # 336 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdlib.h" 3
 
-# 13 "game.c" 2
+# 14 "game.c" 2
 # 1 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdio.h" 1 3
 # 36 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdio.h" 3
 # 1 "/opt/devkitpro/devkitARM/lib/gcc/arm-none-eabi/9.1.0/include/stddef.h" 1 3 4
@@ -1475,10 +1483,10 @@ _putchar_unlocked(int _c)
 }
 # 797 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdio.h" 3
 
-# 14 "game.c" 2
+# 15 "game.c" 2
 
 
-# 15 "game.c"
+# 16 "game.c"
 int state, vOff, cloudVOff, gameSpeed, time, shells_owned;
 OBJ_ATTR shadowOAM[128];
 
@@ -1492,7 +1500,7 @@ void updateAndDrawShells();
 int checkNoEnergy();
 int powpow(int a, int b);
 int min(int a, int b);
-# 53 "game.c"
+# 54 "game.c"
 Player player;
 int playerFrames[8] = {0, 2, 4, 6, 8, 6, 4, 2};
 
@@ -1525,7 +1533,16 @@ void doGame() {
     if (checkNoEnergy()) {
         goDeathEnergy();
     }
-    checkButtons();
+
+
+    if ((time / 60) > 120 + 4) {
+        prepWin();
+    } else {
+        checkButtons();
+    }
+    if ((time / 60) > 120 + 4 + 2) {
+
+    }
     DMANow(3, shadowOAM, ((OBJ_ATTR*)(0x7000000)), 512);
 }
 
@@ -1541,6 +1558,19 @@ void updateAndDrawHUD() {
     doShellDisplay();
     doShieldDisplay();
     doEnergyBar();
+    doProgressBar();
+}
+
+void doProgressBar() {
+    if ((time % 40) > 20) {
+
+        shadowOAM[24].attr0 = (0 << 13) | (2 << 14) | ((48+64-4 - (((time) / (120 + 8)))) & 0xFF);
+        shadowOAM[24].attr1 = (3 << 14) | (231 & 0x1FF);
+        shadowOAM[24].attr2 = ((24) * (32) + (18));
+
+    } else {
+        shadowOAM[24].attr0 = (2 << 8);
+    }
 }
 
 void doEnergyBar() {
@@ -1607,7 +1637,7 @@ void updateAndDrawShells() {
                 shells[i].active = 0;
             } else {
 
-                shells[i].y += 2;
+                shells[i].y += gameSpeed;
             }
 
         } else {
@@ -1673,13 +1703,13 @@ void updateAndDrawPlayer() {
 
     player.energy--;
 
-    if (time % (10 - gameSpeed) == 0) {
+    if (time % (10 - (gameSpeed / 2)) == 0) {
         player.frame = (player.frame + 1) % player.numFrames;
     }
 
-
-
-
+    if (player.agilityUpgradeValue == 5 && player.energyUpgradeValue == 5 && player.shieldUpgradeValue == 5) {
+        ((unsigned short *)0x5000200)[12]++;
+    }
 
 
     shadowOAM[player.entry_OAM].attr0 = (player.y & 0xFF) | (2 << 14) | (0 << 13);
@@ -1689,8 +1719,15 @@ void updateAndDrawPlayer() {
 
 }
 
+void prepWin() {
+    player.x += ((player.x / 8) > 120) ? -3 : 3;
+    player.y -= 1;
+
+}
+
 void checkButtons() {
     if ((!(~(oldButtons) & ((1<<3))) && (~buttons & ((1<<3))))) {
+        pauseSounds();
         goPause();
     }
     if ((~((*(volatile unsigned short *)0x04000130)) & ((1<<5)))) {
@@ -1708,12 +1745,14 @@ void checkButtons() {
 }
 
 void updateBackgrounds() {
-    cloudVOff -= 1;
+
+    gameSpeed = 2 + (time /( 60 * 20));
+
+    cloudVOff -= gameSpeed / 2;
     (*(volatile unsigned short *)0x04000012) = cloudVOff / 8;
     (*(volatile unsigned short *)0x0400001A) = cloudVOff / 8 - 10;
 
-
-    vOff -= 2;
+    vOff -= gameSpeed;
     (*(volatile unsigned short *)0x04000016) = vOff / 8;
 
     (*(volatile unsigned short *)0x04000014) = 0;
@@ -1722,7 +1761,9 @@ void updateBackgrounds() {
 }
 
 void resumeGame() {
-# 301 "game.c"
+# 332 "game.c"
+    unpauseSounds();
+
     hideSprites();
 
     state = GAME;
@@ -1754,12 +1795,16 @@ void resumeGame() {
 
 
 
+
     shadowOAM[0].attr0 = (0 << 13) | (1 << 14) | (2 & 0xFF);
     shadowOAM[0].attr1 = (2 << 14) | (2 & 0x1FF);
     shadowOAM[0].attr2 = ((4) * (32) + (0));
     shadowOAM[1].attr0 = (0 << 13) | (1 << 14) | (2 & 0xFF);
     shadowOAM[1].attr1 = (2 << 14) | (34 & 0x1FF);
     shadowOAM[1].attr2 = ((4) * (32) + (4));
+    shadowOAM[2].attr0 = (0 << 13) | (2 << 14) | (((160-64) / 2) & 0xFF);
+    shadowOAM[2].attr1 = (3 << 14) | (240-2-8 & 0x1FF);
+    shadowOAM[2].attr2 = ((24) * (32) + (16));
 
 
     initEnergyBar();
@@ -1768,7 +1813,8 @@ void resumeGame() {
 }
 
 void newGameRun() {
-# 365 "game.c"
+    playSoundA(town_w_ocean_view_data, town_w_ocean_view_length - 500, 1);
+# 403 "game.c"
     hideSprites();
 
     state = GAME;
@@ -1807,11 +1853,16 @@ void newGameRun() {
     shadowOAM[1].attr0 = (0 << 13) | (1 << 14) | (2 & 0xFF);
     shadowOAM[1].attr1 = (2 << 14) | (34 & 0x1FF);
     shadowOAM[1].attr2 = ((4) * (32) + (4));
+    shadowOAM[2].attr0 = (0 << 13) | (2 << 14) | (((160-64) / 2) & 0xFF);
+    shadowOAM[2].attr1 = (3 << 14) | (240-2-8 & 0x1FF);
+    shadowOAM[2].attr2 = ((24) * (32) + (16));
 
     initShells();
     initEnergyBar();
     updatePlayerStatsAndReset();
-    initHazards();
+    resetHazards();
+
+    time = 0;
 
     DMANow(3, shadowOAM, ((OBJ_ATTR*)(0x7000000)), 512);
 }
@@ -1819,14 +1870,15 @@ void newGameRun() {
 void updatePlayerStatsAndReset() {
 
     player.shieldsLeft = player.shieldUpgradeValue;
-    player.agility = 2 * (player.agilityUpgradeValue + 1);
-    player.energy = 1800 * (player.energyUpgradeValue + 1);
-    player.startingEnergy = 1800 * (player.energyUpgradeValue + 1);
+    player.agility = 2 + (3 * (player.agilityUpgradeValue));
+    player.energy = 2700 * (player.energyUpgradeValue + 1);
+    player.startingEnergy = 2700 * (player.energyUpgradeValue + 1);
 
     player.x = (120 - (player.width / 2)) * 8;
 }
 
 void goGame(int seed) {
+    playSoundA(town_w_ocean_view_data, town_w_ocean_view_length - 500, 1);
 
     srand(seed);
 
@@ -1866,6 +1918,9 @@ void goGame(int seed) {
     shadowOAM[1].attr0 = (0 << 13) | (1 << 14) | (2 & 0xFF);
     shadowOAM[1].attr1 = (2 << 14) | (34 & 0x1FF);
     shadowOAM[1].attr2 = ((4) * (32) + (4));
+    shadowOAM[2].attr0 = (0 << 13) | (2 << 14) | (((160-64) / 2) & 0xFF);
+    shadowOAM[2].attr1 = (3 << 14) | (240-2-8 & 0x1FF);
+    shadowOAM[2].attr2 = ((24) * (32) + (16)) | ((0)<<12);
 
     initPlayer();
     initShells();
@@ -1875,7 +1930,8 @@ void goGame(int seed) {
     vOff = 0;
     int cloudVOff = 0;
     int gameSpeed = 2;
-    int time = 0;
+    gameSpeed = 2;
+    time = 0;
 
     DMANow(3, shadowOAM, ((OBJ_ATTR*)(0x7000000)), 512);
 
@@ -1897,6 +1953,6 @@ void initPlayer() {
 
     player.shieldsLeft = player.shieldUpgradeValue;
     player.agility = 2 * (player.agilityUpgradeValue + 1);
-    player.energy = 1800 * (player.energyUpgradeValue + 1);
-    player.startingEnergy = 1800 * (player.energyUpgradeValue + 1);
+    player.energy = 2700 * (player.energyUpgradeValue + 1);
+    player.startingEnergy = 2700 * (player.energyUpgradeValue + 1);
 }

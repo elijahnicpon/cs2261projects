@@ -37,10 +37,14 @@ void doDeathEnergy();
 void doUpgradeMenu();
 void goUpgradeMenu();
 # 8 "states.h" 2
+# 1 "controls_menu.h" 1
+void goControlsMenu();
+void doControlsMenu();
+# 9 "states.h" 2
 # 1 "death_plastic.h" 1
 void goDeathPlastic();
 void doDeathPlastic();
-# 9 "states.h" 2
+# 10 "states.h" 2
 # 1 "sound.h" 1
 
 
@@ -66,13 +70,14 @@ typedef struct{
 
 SOUND soundA;
 SOUND soundB;
-# 10 "states.h" 2
+# 11 "states.h" 2
 
 
 enum STATE {START_MENU, INFO_MENU, CONTROLS_MENU, ABOUT_MENU, GAME, PAUSE, UPGRADE_MENU, END_ANIMATION, END_MENU, DEATH_ENERGY, DEATH_PLASTIC, DEATH_OIL, DAETH_BOAT, DEATH_SHARK, DEATH_CYANIDE, DEATH_BLAST};
 int state;
 int shells_owned;
 int time;
+int gameSpeed;
 
 typedef struct {
     int x;

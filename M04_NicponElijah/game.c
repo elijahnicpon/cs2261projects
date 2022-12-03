@@ -6,6 +6,7 @@
 #include "game_bg_copy.h"
 #include "game_clouds_bg.h"
 #include "game_clouds_SHADOW_bg.h"
+#include "town_w_ocean_view.h"
 
 #include "coin.h"
 
@@ -82,7 +83,16 @@ void doGame() {
     if (checkNoEnergy()) {
         goDeathEnergy();
     }
-    checkButtons();
+
+
+    if ((time / 60) > 120 + 4) {
+        prepWin();
+    } else {
+        checkButtons();
+    }
+    if ((time / 60) > 120 + 4 + 2) {
+        //goWin();
+    }
     DMANow(3, shadowOAM, OAM, 512);
 }
 
@@ -98,6 +108,19 @@ void updateAndDrawHUD() {
     doShellDisplay();
     doShieldDisplay();
     doEnergyBar();
+    doProgressBar();
+}
+
+void doProgressBar() {
+    if ((time % 40) > 20) {
+        // int yval = 156 - time / 120 * 60
+        shadowOAM[24].attr0 = ATTR0_4BPP | ATTR0_TALL | ((48+64-4 - (((time) / (120 + 8)))) & 0xFF);
+        shadowOAM[24].attr1 = ATTR1_LARGE | (231 & 0x1FF);
+        shadowOAM[24].attr2 = OFFSET(18,24,32);
+
+    } else {
+        shadowOAM[24].attr0 = ATTR0_HIDE;   
+    }
 }
 
 void doEnergyBar() {
@@ -164,7 +187,7 @@ void updateAndDrawShells() {
                 shells[i].active = 0;
             } else {
                 //TODO: replace acording to gameSpeed
-                shells[i].y += 2;
+                shells[i].y += gameSpeed;
             }
 
         } else {
@@ -230,13 +253,13 @@ void updateAndDrawPlayer() {
 
     player.energy--;
     
-    if (time % (10 - gameSpeed) == 0) {
+    if (time % (10 - (gameSpeed / 2)) == 0) {
         player.frame = (player.frame + 1) % player.numFrames;
     }
 
-    // if (player.agilityUpgradeValue = 5 && player.energyUpgradeValue == 5 && player.shieldUpgradeValue == 5) {
-    //     PALETTE[12]++; //change ss pal @ runtime :)
-    // }
+    if (player.agilityUpgradeValue == 5 && player.energyUpgradeValue == 5 && player.shieldUpgradeValue == 5) {
+        SPRITEPALETTE[12]++; //change ss pal @ runtime :)
+    }
 
 
     shadowOAM[player.entry_OAM].attr0 = (player.y & 0xFF) | ATTR0_TALL | ATTR0_4BPP;
@@ -246,8 +269,15 @@ void updateAndDrawPlayer() {
     
 }
 
+void prepWin() {
+    player.x += ((player.x / 8) > 120) ? -3 : 3;
+    player.y -= 1;
+    //SPRITEPALETTE[5] = COLOR(0,0,0);
+}
+
 void checkButtons() {
     if (BUTTON_PRESSED(BUTTON_START)) {
+        pauseSounds();
         goPause();
     }
     if (BUTTON_HELD(BUTTON_LEFT)) {
@@ -265,12 +295,14 @@ void checkButtons() {
 }
 
 void updateBackgrounds() {
-    cloudVOff -= 1;
+    //TODO: balance speed
+    gameSpeed = 2 + (time /( 60 * 20));
+
+    cloudVOff -=  gameSpeed / 2;
     REG_BG0VOFF = cloudVOff / 8;
     REG_BG2VOFF = cloudVOff / 8 - 10;
 
-
-    vOff -= 2;
+    vOff -= gameSpeed;
     REG_BG1VOFF = vOff / 8;
 
     REG_BG1HOFF = 0;
@@ -297,6 +329,7 @@ void resumeGame() {
 
     // DMANow(3, game_ssPal, SPRITEPALETTE, game_ssPalLen/2);
     // DMANow(3, game_ssTiles, &CHARBLOCK[4], game_ssTilesLen/2);
+    unpauseSounds();
 
     hideSprites();
 
@@ -329,12 +362,16 @@ void resumeGame() {
 
     //~~~~~~~~~~~~~~~~~~~~~~~~
 
+    //HUD OUTLINE
     shadowOAM[0].attr0 = ATTR0_4BPP | ATTR0_WIDE | (2 & 0xFF);
     shadowOAM[0].attr1 = ATTR1_MEDIUM | (2 & 0x1FF);
     shadowOAM[0].attr2 = OFFSET(0,4,32); //real@(0,4,32)
     shadowOAM[1].attr0 = ATTR0_4BPP | ATTR0_WIDE | (2 & 0xFF);
     shadowOAM[1].attr1 = ATTR1_MEDIUM | (34 & 0x1FF);
     shadowOAM[1].attr2 = OFFSET(4,4,32); //real@(4,4,32)
+    shadowOAM[2].attr0 = ATTR0_4BPP | ATTR0_TALL | (((160-64) / 2) & 0xFF);
+    shadowOAM[2].attr1 = ATTR1_LARGE | (240-2-8 & 0x1FF);
+    shadowOAM[2].attr2 = OFFSET(16,24,32);
 
     // initShells();
     initEnergyBar();
@@ -343,6 +380,7 @@ void resumeGame() {
 }
 
 void newGameRun() {
+    playSoundA(town_w_ocean_view_data, town_w_ocean_view_length - 500, 1);
     // hideSprites();
     // state = GAME;
     // REG_DISPCTL = BG0_ENABLE | BG1_ENABLE | SPRITE_ENABLE | MODE0;
@@ -400,11 +438,16 @@ void newGameRun() {
     shadowOAM[1].attr0 = ATTR0_4BPP | ATTR0_WIDE | (2 & 0xFF);
     shadowOAM[1].attr1 = ATTR1_MEDIUM | (34 & 0x1FF);
     shadowOAM[1].attr2 = OFFSET(4,4,32); //real@(4,4,32)
+    shadowOAM[2].attr0 = ATTR0_4BPP | ATTR0_TALL | (((160-64) / 2) & 0xFF);
+    shadowOAM[2].attr1 = ATTR1_LARGE | (240-2-8 & 0x1FF);
+    shadowOAM[2].attr2 = OFFSET(16,24,32);
 
     initShells();
     initEnergyBar();
     updatePlayerStatsAndReset();
-    initHazards();
+    resetHazards();
+
+    time = 0;
 
     DMANow(3, shadowOAM, OAM, 512);
 }
@@ -412,14 +455,15 @@ void newGameRun() {
 void updatePlayerStatsAndReset() {
     //update stats
     player.shieldsLeft = player.shieldUpgradeValue;
-    player.agility = 2 * (player.agilityUpgradeValue + 1);
-    player.energy = 1800 * (player.energyUpgradeValue + 1);
-    player.startingEnergy = 1800 * (player.energyUpgradeValue + 1);
+    player.agility = 2 + (3 * (player.agilityUpgradeValue));
+    player.energy = 2700 * (player.energyUpgradeValue + 1);
+    player.startingEnergy = 2700 * (player.energyUpgradeValue + 1);
 
     player.x = (120 - (player.width / 2)) * 8;
 }
 
 void goGame(int seed) {
+    playSoundA(town_w_ocean_view_data, town_w_ocean_view_length - 500, 1);
 
     srand(seed);
 
@@ -459,6 +503,9 @@ void goGame(int seed) {
     shadowOAM[1].attr0 = ATTR0_4BPP | ATTR0_WIDE | (2 & 0xFF);
     shadowOAM[1].attr1 = ATTR1_MEDIUM | (34 & 0x1FF);
     shadowOAM[1].attr2 = OFFSET(4,4,32); //real@(4,4,32)
+    shadowOAM[2].attr0 = ATTR0_4BPP | ATTR0_TALL | (((160-64) / 2) & 0xFF);
+    shadowOAM[2].attr1 = ATTR1_LARGE | (240-2-8 & 0x1FF);
+    shadowOAM[2].attr2 = OFFSET(16,24,32) | ATTR2_PALROW(0);
 
     initPlayer();
     initShells();
@@ -468,7 +515,8 @@ void goGame(int seed) {
     vOff = 0;
     int cloudVOff = 0;
     int gameSpeed = 2;
-    int time = 0;
+    gameSpeed = 2;
+    time = 0;
 
     DMANow(3, shadowOAM, OAM, 512);
 
@@ -490,6 +538,6 @@ void initPlayer() {
 
     player.shieldsLeft = player.shieldUpgradeValue;
     player.agility = 2 * (player.agilityUpgradeValue + 1);
-    player.energy = 1800 * (player.energyUpgradeValue + 1);
-    player.startingEnergy = 1800 * (player.energyUpgradeValue + 1);
-}
+    player.energy = 2700 * (player.energyUpgradeValue + 1);
+    player.startingEnergy = 2700 * (player.energyUpgradeValue + 1);
+} 

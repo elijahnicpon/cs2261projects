@@ -5,7 +5,7 @@
 #include "coral_bg.h"
 #include "start_menus_ss.h"
 
-#include "town_w_ocean_view.h"
+#include "sixth_station.h"
 
 int state, hOff, vOff, time;
 OBJ_ATTR shadowOAM[128];
@@ -67,4 +67,5 @@ void goStartMenu() {
     DMANow(3, shadowOAM, OAM, 512);
     //TODO: uncomment below
     //playSoundA(town_w_ocean_view_data, town_w_ocean_view_length - 500, 1);
+    playSoundA(sixth_station_data, sixth_station_length - 500, 1);
 }

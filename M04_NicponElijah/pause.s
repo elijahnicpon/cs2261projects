@@ -38,38 +38,34 @@ doPause:
 	tst	r3, #4
 	beq	.L13
 .L3:
-	ldr	r4, .L14+8
-	ldr	r3, .L14+12
+	ldr	r3, .L14+8
 	mov	lr, pc
 	bx	r3
-	ldr	r3, [r4]
-	add	r1, r3, #1
-	cmp	r1, #0
+	ldr	ip, .L14+12
+	ldr	r3, [ip]
+	add	r2, r3, #1
+	cmp	r2, #0
 	addlt	r3, r3, #8
-	movge	r3, r1
-	mov	ip, #0
-	mov	r0, #67108864
-	ldr	lr, .L14+16
+	movge	r3, r2
+	mov	r0, #0
+	mov	r1, #67108864
 	asr	r3, r3, #3
-	ldr	r2, [lr]
-	str	r1, [r4]
+	ldr	lr, .L14+16
 	lsl	r3, r3, #16
-	ldr	r1, .L14+20
 	lsr	r3, r3, #16
-	add	r2, r2, #1
-	str	r2, [lr]
-	str	ip, [r1]
+	str	r0, [lr]
+	str	r2, [ip]
 	pop	{r4, lr}
-	strh	ip, [r0, #18]	@ movhi
-	strh	r3, [r0, #16]	@ movhi
+	strh	r0, [r1, #18]	@ movhi
+	strh	r3, [r1, #16]	@ movhi
 	bx	lr
 .L13:
-	ldr	r3, .L14+24
+	ldr	r3, .L14+20
 	mov	lr, pc
 	bx	r3
 	b	.L3
 .L12:
-	ldr	r3, .L14+28
+	ldr	r3, .L14+24
 	mov	lr, pc
 	bx	r3
 	ldrh	r3, [r4]
@@ -79,9 +75,8 @@ doPause:
 .L14:
 	.word	oldButtons
 	.word	buttons
-	.word	hOff
 	.word	waitForVBlank
-	.word	time
+	.word	hOff
 	.word	vOff
 	.word	goStartMenu
 	.word	resumeGame
@@ -195,6 +190,7 @@ goPause:
 	.comm	shadowOAM,1024,4
 	.comm	vOff,4,4
 	.comm	hOff,4,4
+	.comm	gameSpeed,4,4
 	.comm	time,4,4
 	.comm	shells_owned,4,4
 	.comm	state,4,4

@@ -386,6 +386,7 @@ enum STATE {START_MENU, INFO_MENU, CONTROLS_MENU, ABOUT_MENU, GAME, PAUSE, UPGRA
 int state;
 int shells_owned;
 int time;
+int gameSpeed;
 
 typedef struct {
     int x;

@@ -33,7 +33,7 @@ game_ssPal:
 	.short	29596
 	.short	5055
 	.short	0
-	.short	4287
+	.short	32383
 	.short	23551
 	.short	1023
 	.short	607
@@ -42,13 +42,13 @@ game_ssPal:
 	.short	25368
 	.short	19026
 	.short	20393
-	.short	0
+	.short	4287
 	.short	7815
 	.short	0
 	.short	0
 	.short	0
-	.short	0
-	.short	0
+	.short	1024
+	.short	31743
 	.short	0
 	.short	0
 	.short	0
@@ -4548,7 +4548,7 @@ game_ssTiles:
 	.short	0
 	.short	0
 	.short	0
-	.short	7
+	.short	0
 	.short	0
 	.short	0
 	.short	0
@@ -5063,19 +5063,35 @@ game_ssTiles:
 	.short	0
 	.short	0
 	.short	0
-	.short	9
-	.short	-28672
-	.short	9
-	.short	-28672
+	.short	15
+	.short	-4096
+	.short	15
+	.short	-4096
 	.short	0
-	.short	-28672
+	.short	-4096
 	.short	0
-	.short	-28672
-	.short	9
+	.short	-4096
+	.short	15
 	.short	0
-	.short	9
+	.short	15
+	.short	0
+	.short	-1
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
 	.short	0
 	.short	-26215
+	.short	-26215
+	.short	-26215
+	.short	-24850
+	.short	-26215
+	.short	-26135
 	.short	0
 	.short	0
 	.short	0
@@ -5085,61 +5101,45 @@ game_ssTiles:
 	.short	0
 	.short	0
 	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	273
-	.short	0
-	.short	16
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	273
-	.short	273
-	.short	257
-	.short	16
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	9
-	.short	-28672
-	.short	9
-	.short	-28672
-	.short	0
-	.short	-28672
-	.short	0
-	.short	-28672
-	.short	9
-	.short	0
-	.short	9
 	.short	0
 	.short	-26215
+	.short	-26215
+	.short	-24850
+	.short	-24850
+	.short	-24930
+	.short	-26135
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	2457
+	.short	0
+	.short	2457
+	.short	0
+	.short	2457
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	15
+	.short	-4096
+	.short	15
+	.short	-4096
+	.short	0
+	.short	-4096
+	.short	0
+	.short	-4096
+	.short	15
+	.short	0
+	.short	15
+	.short	0
+	.short	-1
 	.short	0
 	.short	0
 	.short	0
@@ -5150,12 +5150,12 @@ game_ssTiles:
 	.short	0
 	.short	0
 	.short	12288
-	.short	0
-	.short	8960
-	.short	0
-	.short	4881
-	.short	0
-	.short	4912
+	.short	-26215
+	.short	9113
+	.short	-26215
+	.short	5102
+	.short	-26215
+	.short	4921
 	.short	0
 	.short	0
 	.short	0
@@ -5167,11 +5167,11 @@ game_ssTiles:
 	.short	13107
 	.short	3
 	.short	13090
-	.short	3
+	.short	-26221
 	.short	13089
-	.short	275
+	.short	-24861
 	.short	12833
-	.short	19
+	.short	-26141
 	.short	0
 	.short	0
 	.short	0
@@ -5182,28 +5182,28 @@ game_ssTiles:
 	.short	0
 	.short	0
 	.short	0
+	.short	2457
+	.short	0
+	.short	2457
+	.short	0
+	.short	2457
 	.short	0
 	.short	0
 	.short	0
 	.short	0
+	.short	15
+	.short	-4096
+	.short	15
+	.short	-4096
 	.short	0
+	.short	-4096
 	.short	0
+	.short	-4096
+	.short	15
 	.short	0
+	.short	15
 	.short	0
-	.short	0
-	.short	9
-	.short	-28672
-	.short	9
-	.short	-28672
-	.short	0
-	.short	-28672
-	.short	0
-	.short	-28672
-	.short	9
-	.short	0
-	.short	9
-	.short	0
-	.short	-26215
+	.short	-1
 	.short	0
 	.short	0
 	.short	0
@@ -5214,11 +5214,11 @@ game_ssTiles:
 	.short	13380
 	.short	16384
 	.short	13108
-	.short	16384
+	.short	18841
 	.short	13107
-	.short	17408
+	.short	17561
 	.short	9011
-	.short	17408
+	.short	17561
 	.short	9011
 	.short	0
 	.short	0
@@ -5231,11 +5231,11 @@ game_ssTiles:
 	.short	13107
 	.short	51
 	.short	12835
-	.short	819
+	.short	-27853
 	.short	8722
-	.short	819
+	.short	-27853
 	.short	8465
-	.short	819
+	.short	-27853
 	.short	0
 	.short	0
 	.short	0
@@ -5246,28 +5246,28 @@ game_ssTiles:
 	.short	0
 	.short	0
 	.short	0
+	.short	2457
+	.short	0
+	.short	2457
+	.short	0
+	.short	2457
 	.short	0
 	.short	0
 	.short	0
 	.short	0
+	.short	15
+	.short	-4096
+	.short	15
+	.short	-4096
 	.short	0
+	.short	-4096
 	.short	0
+	.short	-4096
+	.short	15
 	.short	0
+	.short	15
 	.short	0
-	.short	0
-	.short	9
-	.short	-28672
-	.short	9
-	.short	-28672
-	.short	0
-	.short	-28672
-	.short	0
-	.short	-28672
-	.short	9
-	.short	0
-	.short	9
-	.short	0
-	.short	-26215
+	.short	-1
 	.short	26230
 	.short	17476
 	.short	18016
@@ -5310,11 +5310,11 @@ game_ssTiles:
 	.short	0
 	.short	4
 	.short	0
-	.short	68
+	.short	2372
 	.short	0
-	.short	68
+	.short	2372
 	.short	0
-	.short	68
+	.short	2372
 	.short	0
 	.short	0
 	.short	22352
@@ -5374,11 +5374,11 @@ game_ssTiles:
 	.short	0
 	.short	4
 	.short	0
-	.short	68
+	.short	2372
 	.short	0
-	.short	68
+	.short	2372
 	.short	0
-	.short	68
+	.short	2372
 	.short	0
 	.short	0
 	.short	0
@@ -5588,24 +5588,10 @@ game_ssTiles:
 	.short	0
 	.short	0
 	.short	0
-	.short	0
-	.short	16
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	257
-	.short	16
+	.short	-26215
+	.short	-26135
+	.short	-26215
+	.short	-26215
 	.short	0
 	.short	0
 	.short	0
@@ -5618,6 +5604,10 @@ game_ssTiles:
 	.short	0
 	.short	0
 	.short	0
+	.short	-24930
+	.short	-26135
+	.short	-26215
+	.short	-26215
 	.short	0
 	.short	0
 	.short	0
@@ -5625,6 +5615,14 @@ game_ssTiles:
 	.short	0
 	.short	0
 	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	2457
+	.short	0
+	.short	2457
 	.short	0
 	.short	0
 	.short	0
@@ -5653,9 +5651,11 @@ game_ssTiles:
 	.short	0
 	.short	0
 	.short	0
-	.short	4912
 	.short	0
-	.short	8960
+	.short	-26215
+	.short	4921
+	.short	-26215
+	.short	9113
 	.short	0
 	.short	12288
 	.short	0
@@ -5669,9 +5669,9 @@ game_ssTiles:
 	.short	0
 	.short	0
 	.short	12833
-	.short	19
+	.short	-26141
 	.short	13090
-	.short	3
+	.short	-26221
 	.short	13107
 	.short	0
 	.short	819
@@ -5684,6 +5684,9 @@ game_ssTiles:
 	.short	0
 	.short	0
 	.short	0
+	.short	2457
+	.short	0
+	.short	2457
 	.short	0
 	.short	0
 	.short	0
@@ -5713,12 +5716,9 @@ game_ssTiles:
 	.short	0
 	.short	0
 	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	16384
+	.short	18841
 	.short	4915
-	.short	16384
+	.short	18841
 	.short	13108
 	.short	0
 	.short	13124
@@ -5733,9 +5733,9 @@ game_ssTiles:
 	.short	0
 	.short	0
 	.short	8465
-	.short	819
+	.short	-27853
 	.short	8738
-	.short	819
+	.short	-27853
 	.short	13107
 	.short	51
 	.short	13107
@@ -5748,9 +5748,9 @@ game_ssTiles:
 	.short	0
 	.short	0
 	.short	0
+	.short	2457
 	.short	0
-	.short	0
-	.short	0
+	.short	2457
 	.short	0
 	.short	0
 	.short	0
@@ -5782,7 +5782,7 @@ game_ssTiles:
 	.short	0
 	.short	13380
 	.short	8739
-	.short	17472
+	.short	17481
 	.short	8739
 	.short	17472
 	.short	9011
@@ -5812,9 +5812,9 @@ game_ssTiles:
 	.short	26180
 	.short	17476
 	.short	26180
-	.short	68
+	.short	2372
 	.short	0
-	.short	68
+	.short	2372
 	.short	0
 	.short	68
 	.short	0
@@ -5876,9 +5876,9 @@ game_ssTiles:
 	.short	26214
 	.short	25668
 	.short	26198
-	.short	68
+	.short	2372
 	.short	0
-	.short	68
+	.short	2372
 	.short	0
 	.short	26212
 	.short	0
@@ -12820,6 +12820,22 @@ game_ssTiles:
 	.short	0
 	.short	0
 	.short	0
+	.short	-1543
+	.short	-1543
+	.short	-24673
+	.short	-24673
+	.short	-1543
+	.short	-1543
+	.short	0
+	.short	4096
+	.short	0
+	.short	4096
+	.short	0
+	.short	4096
+	.short	0
+	.short	4096
+	.short	0
+	.short	4096
 	.short	0
 	.short	0
 	.short	0
@@ -12836,29 +12852,13 @@ game_ssTiles:
 	.short	0
 	.short	0
 	.short	0
+	.short	80
 	.short	0
+	.short	1525
 	.short	0
+	.short	1429
 	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
+	.short	80
 	.short	0
 	.short	0
 	.short	0
@@ -13333,21 +13333,21 @@ game_ssTiles:
 	.short	0
 	.short	0
 	.short	0
+	.short	4352
 	.short	0
+	.short	4096
 	.short	0
+	.short	4096
 	.short	0
+	.short	4096
 	.short	0
+	.short	4096
 	.short	0
+	.short	4096
 	.short	0
+	.short	4096
 	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
+	.short	4096
 	.short	0
 	.short	0
 	.short	0
@@ -13845,21 +13845,21 @@ game_ssTiles:
 	.short	0
 	.short	0
 	.short	0
+	.short	4368
 	.short	0
+	.short	4096
 	.short	0
+	.short	4096
 	.short	0
+	.short	4096
 	.short	0
+	.short	4096
 	.short	0
+	.short	4096
 	.short	0
+	.short	4096
 	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
+	.short	4096
 	.short	0
 	.short	0
 	.short	0
@@ -14357,21 +14357,21 @@ game_ssTiles:
 	.short	0
 	.short	0
 	.short	0
+	.short	4352
 	.short	0
+	.short	4096
 	.short	0
+	.short	4096
 	.short	0
+	.short	4096
 	.short	0
+	.short	4096
 	.short	0
+	.short	4096
 	.short	0
+	.short	4096
 	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
+	.short	4096
 	.short	0
 	.short	0
 	.short	0
@@ -14869,21 +14869,21 @@ game_ssTiles:
 	.short	0
 	.short	0
 	.short	0
+	.short	4368
 	.short	0
+	.short	4096
 	.short	0
+	.short	4096
 	.short	0
+	.short	4096
 	.short	0
+	.short	4096
 	.short	0
+	.short	4096
 	.short	0
+	.short	4096
 	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
+	.short	4096
 	.short	0
 	.short	0
 	.short	0
@@ -15381,13 +15381,21 @@ game_ssTiles:
 	.short	0
 	.short	0
 	.short	0
+	.short	4352
 	.short	0
+	.short	4096
 	.short	0
+	.short	4096
 	.short	0
+	.short	4096
 	.short	0
+	.short	4096
 	.short	0
+	.short	4096
 	.short	0
+	.short	4096
 	.short	0
+	.short	4096
 	.short	0
 	.short	0
 	.short	0
@@ -15885,13 +15893,21 @@ game_ssTiles:
 	.short	0
 	.short	0
 	.short	0
+	.short	4368
 	.short	0
+	.short	4096
 	.short	0
+	.short	4096
 	.short	0
+	.short	4096
 	.short	0
+	.short	4096
 	.short	0
+	.short	4096
 	.short	0
+	.short	4096
 	.short	0
+	.short	4096
 	.short	0
 	.short	0
 	.short	0
@@ -16389,37 +16405,21 @@ game_ssTiles:
 	.short	0
 	.short	0
 	.short	0
+	.short	4352
 	.short	0
+	.short	4096
 	.short	0
+	.short	4096
 	.short	0
+	.short	4096
 	.short	0
+	.short	4096
 	.short	0
+	.short	4096
 	.short	0
+	.short	4096
 	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
+	.short	4096
 	.short	0
 	.short	0
 	.short	0

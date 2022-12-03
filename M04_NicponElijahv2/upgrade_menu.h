@@ -1,2 +1,0 @@
-void doUpgradeMenu();
-void goUpgradeMenu();

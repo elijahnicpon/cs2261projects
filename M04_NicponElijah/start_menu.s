@@ -135,8 +135,8 @@ goStartMenu:
 	mov	lr, pc
 	bx	r4
 	mov	lr, #640
-	mov	r0, #30
 	mov	ip, #40
+	mov	r0, #30
 	mov	r6, #8
 	mov	r2, #648
 	ldr	r3, .L19+44
@@ -151,20 +151,28 @@ goStartMenu:
 	add	r3, r3, #64
 	strh	r3, [r1, #10]	@ movhi
 	add	r3, r3, #130
+	strh	lr, [r1, #18]	@ movhi
 	strh	r5, [r1, #4]	@ movhi
 	strh	r6, [r1, #12]	@ movhi
-	strh	lr, [r1, #18]	@ movhi
 	strh	r3, [r1, #26]	@ movhi
 	strh	r2, [r1, #28]	@ movhi
 	strh	r0, [r1]	@ movhi
 	strh	r0, [r1, #8]	@ movhi
+	strh	ip, [r1, #16]	@ movhi
+	strh	ip, [r1, #24]	@ movhi
 	mov	r3, #512
 	mov	r2, #117440512
 	mov	r0, #3
-	strh	ip, [r1, #16]	@ movhi
-	strh	ip, [r1, #24]	@ movhi
 	mov	lr, pc
 	bx	r4
+	ldr	r3, .L19+64
+	ldr	r1, [r3]
+	mov	r2, #1
+	ldr	r0, .L19+68
+	ldr	r3, .L19+72
+	sub	r1, r1, #500
+	mov	lr, pc
+	bx	r3
 	pop	{r4, r5, r6, lr}
 	bx	lr
 .L20:
@@ -186,10 +194,14 @@ goStartMenu:
 	.word	shadowOAM
 	.word	-16364
 	.word	-16234
+	.word	sixth_station_length
+	.word	sixth_station_data
+	.word	playSoundA
 	.size	goStartMenu, .-goStartMenu
 	.comm	shadowOAM,1024,4
 	.comm	vOff,4,4
 	.comm	hOff,4,4
+	.comm	gameSpeed,4,4
 	.comm	time,4,4
 	.comm	shells_owned,4,4
 	.comm	state,4,4

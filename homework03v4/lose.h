@@ -1,2 +1,0 @@
-void doLose();
-void goLose();

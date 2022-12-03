@@ -197,6 +197,7 @@ goDeathPlastic:
 	.comm	shadowOAM,1024,4
 	.comm	vOff,4,4
 	.comm	hOff,4,4
+	.comm	gameSpeed,4,4
 	.comm	time,4,4
 	.comm	shells_owned,4,4
 	.comm	state,4,4

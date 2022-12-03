@@ -1,2 +1,0 @@
-void goAboutMenu();
-void doAboutMenu();

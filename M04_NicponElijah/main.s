@@ -171,6 +171,7 @@ main:
 	.size	main, .-main
 	.comm	oldButtons,2,2
 	.comm	buttons,2,2
+	.comm	gameSpeed,4,4
 	.comm	time,4,4
 	.comm	shells_owned,4,4
 	.comm	state,4,4

@@ -1,2 +1,0 @@
-void goControlsMenu();
-void doControlsMenu();
